@@ -1,0 +1,64 @@
+/* Appearance Settings Page Styles */
+.appearance-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.appearance-settings-view .setting-item-card {
+    border-radius: var(--app-radius-card);
+    background-color: var(--app-card-bg) !important;
+    border: 0.5px solid var(--app-border-refined);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.appearance-settings-view .setting-item-card:hover {
+    border-color: var(--el-color-primary-light-5);
+    box-shadow: var(--el-box-shadow-lighter);
+}
+
+.appearance-settings-view .setting-item-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.appearance-settings-view .setting-item-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.appearance-settings-view .setting-item-left .el-icon {
+    color: var(--el-color-primary);
+    font-size: 24px;
+    margin-top: 2px;
+}
+
+.appearance-settings-view .setting-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.appearance-settings-view .setting-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--el-text-color-primary);
+}
+
+.appearance-settings-view .setting-desc {
+    font-size: 13px;
+    color: var(--el-text-color-secondary);
+    line-height: 1.4;
+}
+
+.appearance-settings-view .clickable-card {
+    cursor: pointer;
+}
+
+.appearance-settings-view .card-arrow {
+    color: var(--el-text-color-placeholder);
+    font-size: 20px;
+}

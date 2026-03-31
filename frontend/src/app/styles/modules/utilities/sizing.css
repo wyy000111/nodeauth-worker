@@ -1,0 +1,56 @@
+/* Sizing Utilities */
+.m-auto {
+    margin: 0 auto !important;
+}
+
+.w-80 {
+    width: 80px !important;
+}
+
+.w-100 {
+    width: 100px !important;
+}
+
+.w-120 {
+    width: 120px !important;
+}
+
+.w-full {
+    width: 100% !important;
+}
+
+.max-w-400 {
+    max-width: 400px !important;
+}
+
+.max-w-600 {
+    max-width: 600px !important;
+}
+
+.max-w-100p {
+    max-width: 100% !important;
+}
+
+.min-h-100 {
+    min-height: 100px !important;
+}
+
+.min-h-150 {
+    min-height: 150px !important;
+}
+
+.min-h-200 {
+    min-height: 200px !important;
+}
+
+.min-h-400 {
+    min-height: 400px !important;
+}
+
+.h-32 {
+    height: 32px !important;
+}
+
+.h-auto {
+    height: auto !important;
+}

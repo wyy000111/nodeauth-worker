@@ -1,0 +1,70 @@
+services:
+
+  nodeauth-worker:
+    build: .
+    image: nodeauth-worker:latest
+    container_name: nodeauth
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # =========== 数据库引擎 ===========
+      # [必填] 支持 sqlite mysql postgresql，默认 sqlite
+      - DB_ENGINE=mysql
+      - DB_HOST=
+      - DB_PORT=
+      - DB_USER=
+      - DB_PASSWORD=
+      - DB_NAME=
+      - DB_SSL=false
+
+      # =========== 核心安全参数 ===========
+      # [必填] 加密2FA种子的底层密钥，非常重要！丢失会造成数据无法解密！
+      # 建议使用 `openssl rand -hex 32` 生成
+      - ENCRYPTION_KEY=your_super_secret_encryption_key_here
+      
+      # [必填] 用于签发会话 Token 的密钥
+      # 建议使用 `openssl rand -hex 32` 生成
+      - JWT_SECRET=your_jwt_secret_here
+      
+      # [必填] 允许登录系统的用户邮箱或Telegram用户名，多个用逗号隔开
+      - OAUTH_ALLOWED_USERS=your_email@example.com
+      
+      # =========== 日志级别 ===========  
+      # [可选] 日志级别: debug, info, warn, error.
+      - LOG_LEVEL=info
+      
+      # =========== 登录供应商配置 (至少选择一种,推荐使用 Github) ===========
+      # Google 登录配置
+      # - OAUTH_GOOGLE_CLIENT_ID=
+      # - OAUTH_GOOGLE_CLIENT_SECRET=
+      # - OAUTH_GOOGLE_REDIRECT_URI=https://<your_domain>/oauth/callback
+
+      # Github 登录配置
+      # - OAUTH_GITHUB_CLIENT_ID=
+      # - OAUTH_GITHUB_CLIENT_SECRET=
+      # - OAUTH_GITHUB_REDIRECT_URI=https://<your_domain>/oauth/callback
+
+      # Telegram 登录配置
+      # - OAUTH_TELEGRAM_BOT_NAME=your_bot_name
+      # - OAUTH_TELEGRAM_BOT_TOKEN=your_bot_token
+
+      # Cloudflare 登录配置
+      # - OAUTH_CLOUDFLARE_CLIENT_ID=
+      # - OAUTH_CLOUDFLARE_CLIENT_SECRET=
+      # - OAUTH_CLOUDFLARE_REDIRECT_URI=https://<your_domain>/oauth/callback
+      # - OAUTH_CLOUDFLARE_ORG_DOMAIN=https://<your_team>.cloudflareaccess.com
+
+      # Gitee 登录配置
+      # - OAUTH_GITEE_CLIENT_ID=
+      # - OAUTH_GITEE_CLIENT_SECRET=
+      # - OAUTH_GITEE_REDIRECT_URI=https://<your_domain>/oauth/callback
+
+      # Nodeloc 登录配置
+      # - OAUTH_NODELOC_CLIENT_ID=
+      # - OAUTH_NODELOC_CLIENT_SECRET=
+      # - OAUTH_NODELOC_REDIRECT_URI=https://<your_domain>/oauth/callback
+
+      # Web3 钱包登录 (WalletConnect)
+      # - OAUTH_WALLETCONNECT_PROJECT_ID=
+      # - OAUTH_WALLETCONNECT_SELF_PROXY=true

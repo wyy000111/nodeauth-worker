@@ -1,0 +1,60 @@
+name: "Build and push Docker images"
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    name: "Build and push Docker images"
+    permissions:
+      contents: read
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+    # 1. 在宿主机 (AMD64) 上极速安装依赖并构建前端及后端
+    # 前端构建出的 JS/CSS 是平台无关的，构建一次即可
+    - name: Setup Node.js
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      with:
+        node-version: '24'
+        cache: 'npm'
+
+    - name: Pre-build Frontend & Backend
+      run: |
+        npm install --prefix frontend
+        DOCKER_BUILD=true npm run build --prefix frontend
+        
+        cd backend
+        npm install
+        npm run build:docker
+        cd ..
+
+    # 2. 准备 Docker 环境
+    - name: Login to DockerHub
+      uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+
+    # 3. 极速打包 Docker
+    - name: Push images to Docker hub
+      uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+      with:
+        context: .
+        push: true
+        platforms: linux/amd64,linux/arm64
+        tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

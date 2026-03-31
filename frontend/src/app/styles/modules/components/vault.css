@@ -1,0 +1,474 @@
+.vault-item-col {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
+/* VaultList.vue */
+.offline-sync-banner {
+    padding: 10px;
+    background-color: var(--el-color-warning-light-9);
+    border: 0.5px solid var(--el-color-warning-light-5);
+    border-radius: var(--app-radius-aux);
+    color: var(--el-color-warning-dark-2);
+    display: flex;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.vault-card {
+    position: relative;
+    border-radius: var(--app-radius-card);
+    border: 0.5px solid var(--app-border-refined);
+    background-color: var(--app-card-bg);
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+
+
+
+.vault-list-wrapper .card-header,
+.drag-floating-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Flex 容器：限制宽度以支持内部文本截断 */
+.service-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    /* 占据剩余空间 */
+    min-width: 0;
+    /* 关键：允许 Flex 子项收缩 */
+    margin-right: 10px;
+}
+
+/* 标题截断逻辑 */
+.service-name {
+    margin: 0;
+    font-size: 18px;
+    color: var(--el-text-color-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* 禁用自动链接化与长按菜单 */
+    text-decoration: none !important;
+    -webkit-touch-callout: none;
+}
+
+/* 彻底屏蔽可能被注入的链接样式 */
+.service-name a,
+.vault-name a {
+    color: inherit !important;
+    text-decoration: none !important;
+    pointer-events: none !important;
+}
+
+/* 在移动端彻底禁用点击，防止触发自动识别的链接 */
+@media (max-width: 767px) {
+
+    .service-name,
+    .vault-name {
+        pointer-events: none !important;
+    }
+}
+
+/* 让卡片内容撑开，底部对齐 */
+.vault-card .el-card__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.vault-name {
+    color: var(--el-text-color-secondary);
+    font-size: 14px;
+    margin: 0 0 10px 24px;
+    word-break: break-all;
+    /* 禁用自动链接化、下划线与长按菜单 */
+    text-decoration: none !important;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+}
+
+.more-icon {
+    cursor: pointer;
+    color: var(--el-text-color-secondary);
+    padding: 5px;
+}
+
+.more-icon:hover {
+    color: #409EFF;
+}
+
+.vault-card.is-selected {
+    border: 1px solid var(--el-color-primary);
+    background-color: var(--el-color-primary-light-9);
+    box-shadow: 0 0 0 1px var(--el-color-primary);
+}
+
+.vault-card.is-pending {
+    border: 1px dashed var(--el-color-warning) !important;
+    background-color: var(--el-color-warning-light-9);
+    opacity: 0.9;
+}
+
+.pending-icon {
+    color: var(--el-color-warning);
+    animation: pulse-cloud 2s infinite ease-in-out;
+}
+
+@keyframes pulse-cloud {
+    0% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.15);
+    }
+
+    100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+}
+
+.batch-text {
+    color: var(--el-text-color-regular);
+    font-size: 14px;
+}
+
+.code-display-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-left: 24px;
+    padding-top: 15px;
+}
+
+.code-left {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.current-code {
+    font-size: 30px;
+    font-weight: 700;
+    color: #409EFF;
+    letter-spacing: 2px;
+    line-height: 1;
+    font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    display: flex;
+    align-items: baseline;
+}
+
+.code-divider {
+    display: inline-block;
+    width: 8px;
+    /* 这是关键：精准控制间距宽度 */
+}
+
+.code-divider.is-next {
+    width: 4px;
+}
+
+.current-code[data-digits="8"] {
+    font-size: 26px;
+    /* 8位也不含糊，对齐 6位的原本字号 */
+    letter-spacing: 1.5px;
+}
+
+.next-code {
+    font-size: 24px;
+    /* 从 16px 下调 */
+    color: var(--el-text-color-secondary);
+    font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
+    display: flex;
+    align-items: baseline;
+}
+
+.next-code[data-digits="8"] {
+    font-size: 20px;
+    letter-spacing: 0px;
+}
+
+.timer-text {
+    font-size: 12px;
+    color: var(--el-text-color-regular);
+    font-weight: bold;
+    display: block;
+    text-align: center;
+}
+
+.el-progress__text {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+}
+
+/* 🛡️ 冲突解决遮罩 (Conflict Resolution Overlay) */
+.conflict-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(var(--el-bg-color-rgb), 0.85);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    border-radius: var(--app-radius-card);
+    text-align: center;
+}
+
+.conflict-content {
+    width: 100%;
+}
+
+.conflict-text {
+    font-size: 14px;
+    color: var(--el-text-color-primary);
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.conflict-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+/* VaultList - QR Dialog */
+.qr-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.qr-info {
+    margin-bottom: 15px;
+}
+
+.qr-service {
+    margin: 0 0 5px 0;
+    font-size: 20px;
+    color: var(--el-text-color-primary);
+}
+
+.qr-account {
+    margin: 0;
+    color: var(--el-text-color-secondary);
+    font-size: 14px;
+}
+
+.qr-image-wrapper {
+    margin: 10px 0;
+    padding: 10px;
+    background: #fff;
+    border-radius: var(--app-radius-aux);
+    border: 0.5px solid var(--app-border-refined);
+}
+
+.qr-code-img {
+    display: block;
+    width: 200px;
+    height: 200px;
+}
+
+.qr-tip {
+    font-size: 12px;
+    color: var(--el-text-color-regular);
+    margin: 10px 0 20px 0;
+}
+
+.secret-section {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.secret-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--el-fill-color-light);
+    padding: 10px 15px;
+    border-radius: var(--app-radius-aux);
+    border: 1px solid var(--el-border-color-light);
+}
+
+.secret-text {
+    font-family: monospace;
+    font-size: 14px;
+    color: var(--el-text-color-regular);
+    letter-spacing: 1px;
+}
+
+.secret-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.action-icon {
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--el-text-color-secondary);
+    transition: color 0.2s;
+}
+
+.action-icon:hover {
+    color: #409EFF;
+}
+
+.uri-link-wrapper {
+    margin-top: 5px;
+}
+
+/* AddVaultManual.vue */
+.vault-manual-form-wrapper {
+    padding: 0;
+}
+
+.vault-manual-submit-btn {
+    width: 100%;
+}
+
+/* --- 拖拽交互态 --- */
+.is-dragging {
+    opacity: 0.3 !important;
+    background-color: var(--el-fill-color-lighter) !important;
+    border: 2px dashed var(--el-color-primary) !important;
+    box-shadow: none !important;
+    transform: scale(0.96) !important;
+}
+
+.is-dragging * {
+    visibility: hidden !important;
+}
+
+.is-pressing {
+    transform: scale(0.96) !important;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+
+.drag-floating-card {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.95;
+    transform: scale(1.05);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3) !important;
+    transition: transform 0.1s ease-out;
+    border-radius: 12px;
+}
+
+/* 拖拽中的过渡动画优化 */
+.vault-list-move {
+    transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+/* --- 紧凑模式样式 (Compact View Styles) --- */
+.vault-card.is-compact {
+    border-radius: var(--app-radius-card);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+
+.vault-card.is-compact .el-card__body {
+    padding: 12px 16px !important;
+}
+
+.vault-card.is-compact .card-header {
+    margin-bottom: 4px;
+}
+
+.vault-card.is-compact .service-name {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.vault-card.is-compact .vault-name {
+    margin: 0 0 4px 29px;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.vault-card.is-compact .code-display-area {
+    padding-top: 4px;
+    padding-left: 29px;
+}
+
+.vault-card.is-compact .current-code {
+    font-size: 26px;
+    /* 紧凑模式也要看得清 */
+    letter-spacing: 2px;
+}
+
+.vault-card.is-compact .current-code[data-digits="8"] {
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+.vault-card.is-compact .code-left {
+    gap: 6px;
+}
+
+.vault-card.is-compact .next-code {
+    font-size: 20px;
+    opacity: 0.7;
+}
+
+.vault-card.is-compact .next-code[data-digits="8"] {
+    font-size: 18px;
+}
+
+.vault-card.is-compact .timer-text {
+    font-size: 10px;
+}
+
+.vault-card.is-compact .el-progress__text {
+    min-width: 24px !important;
+}
+
+.vault-card.is-compact .more-icon {
+    padding: 2px;
+}
+
+/* 优化紧凑模式下的 Checkbox 间距 */
+.vault-card.is-compact .el-checkbox {
+    height: auto;
+}

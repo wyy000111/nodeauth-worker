@@ -1,0 +1,92 @@
+/* Typography Utilities */
+.text-center {
+    text-align: center !important;
+}
+
+.text-left {
+    text-align: left !important;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.text-12 {
+    font-size: 12px !important;
+}
+
+.text-13 {
+    font-size: 13px !important;
+}
+
+.text-14 {
+    font-size: 14px !important;
+}
+
+.text-15 {
+    font-size: 15px !important;
+}
+
+.text-16 {
+    font-size: 16px !important;
+}
+
+.text-18 {
+    font-size: 18px !important;
+}
+
+.text-24 {
+    font-size: 24px !important;
+}
+
+.text-primary {
+    color: var(--el-text-color-primary) !important;
+}
+
+.text-secondary {
+    color: var(--el-text-color-secondary) !important;
+}
+
+.text-regular {
+    color: var(--el-text-color-regular) !important;
+}
+
+.text-warning {
+    color: var(--el-color-warning) !important;
+}
+
+.text-danger {
+    color: var(--el-color-danger) !important;
+}
+
+.font-bold {
+    font-weight: bold !important;
+}
+
+.font-600 {
+    font-weight: 600 !important;
+}
+
+.font-mono {
+    font-family: monospace !important;
+}
+
+.ls-1 {
+    letter-spacing: 1px !important;
+}
+
+.ls-2 {
+    letter-spacing: 2px !important;
+}
+
+.no-underline {
+    text-decoration: none !important;
+}
+
+.color-inherit {
+    color: inherit !important;
+}
+
+.word-break-all {
+    word-break: break-all !important;
+}

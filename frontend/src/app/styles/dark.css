@@ -1,0 +1,17 @@
+/* =========================================
+   深色模式变量配置 (Dark Mode Configuration)
+   ========================================= */
+
+html.dark {
+  /* 玻璃拟态卡片 */
+  --glass-card-bg: rgba(30, 30, 30, 0.6);
+  --glass-card-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+
+  /* GitHub 按钮 (深色背景下使用纯黑+边框) */
+  --github-btn-bg: #000000;
+  --github-btn-border: var(--el-border-color-light);
+
+  /* 状态色块 */
+  --success-tip-bg: var(--el-fill-color-light);
+
+}

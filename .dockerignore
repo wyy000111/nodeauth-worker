@@ -1,0 +1,70 @@
+# 1. Dependencies & Build Artifacts
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+
+# --- WHITESPACE EXCEPTIONS FOR CI ---
+!frontend/dist/
+!backend/dist/
+!backend/node_modules/
+
+dev-dist/
+**/dev-dist/
+.vite/
+**/.vite/
+.pwa-assets/
+wiki/
+
+# 2. Environment & Secrets (STRICT - DO NOT COMMIT)
+.env
+.env.*
+!.env.example
+.secrets
+.dev.vars
+.demo.vars
+*.pem
+*.key
+*.cert
+
+# 3. Database & Local Data
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+data/
+**/*.db*
+
+# 5. Testing Framework Caches (NOT tests/)
+.test/
+coverage/
+playwright-report/
+*.sarif
+Gitleaks_results.sarif
+
+# 6. Agentic AI & Local Scripts
+.antigravity
+.gemini/
+.agent/
+.agents/
+.act/
+.actrc
+.event
+.example/
+
+# 7. System & IDEs (Optional for Docker but good for hygiene)
+.DS_Store
+.vscode/
+.idea/
+.wrangler/
+**/.wrangler/
+.devcontainer/
+.git/
+.github/
+Dockerfile
+docker-compose.yml
+.gitignore
+.dockerignore
+LICENSE
+README.md
+README_EN.md

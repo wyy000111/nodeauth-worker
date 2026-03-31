@@ -1,0 +1,19 @@
+/* TheFooter.vue */
+.global-footer {
+    width: 100%;
+    padding: 0.25rem 0;
+    background-color: var(--app-card-bg);
+    border-top: 1px solid var(--el-border-color-light);
+    text-align: center;
+    margin-top: auto;
+}
+
+.footer-content {
+    color: var(--el-text-color-secondary);
+    font-size: 0.875rem;
+}
+
+.divider {
+    margin: 0 0.5rem;
+    color: var(--el-border-color);
+}

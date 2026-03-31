@@ -1,0 +1,936 @@
+/* =========================================
+   4. UtilityTools 组件 (工具箱)
+   ========================================= */
+
+.tools-wrapper .tab-card-wrapper {
+    padding-bottom: 40px;
+}
+
+.tools-header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.tools-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+}
+
+.tools-header.text-center h2 {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.tools-header p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--el-text-color-secondary);
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.tool-card {
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 0.5px solid var(--app-border-refined) !important;
+    border-radius: var(--app-radius-card) !important;
+    background-color: var(--app-card-bg) !important;
+}
+
+
+
+.tool-card .el-card__body {
+    padding: 24px !important;
+}
+
+.icon-wrapper {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 18px;
+    flex-shrink: 0;
+}
+
+.tool-card-totp-secret .icon-wrapper {
+    background-color: var(--el-color-success-light-9) !important;
+}
+
+.tool-card-totp-secret .el-icon {
+    color: #67C23A !important;
+}
+
+.tool-card-apps-review .icon-wrapper {
+    background-color: var(--el-color-info-light-9) !important;
+}
+
+.tool-card-apps-review .el-icon {
+    color: #9c27b0 !important;
+}
+
+.tool-card-password .icon-wrapper {
+    background-color: var(--el-color-primary-light-9) !important;
+}
+
+.tool-card-password .el-icon {
+    color: #409EFF !important;
+}
+
+.tool-card-time-sync .icon-wrapper {
+    background-color: var(--el-color-warning-light-9) !important;
+}
+
+.tool-card-time-sync .el-icon {
+    color: #E6A23C !important;
+}
+
+.tool-card-qr-parser .icon-wrapper {
+    background-color: var(--el-color-danger-light-9) !important;
+}
+
+.tool-card-qr-parser .el-icon {
+    color: #F56C6C !important;
+}
+
+.tool-card-content {
+    display: flex;
+    align-items: center;
+}
+
+.text-info {
+    flex: 1;
+}
+
+.text-info h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+}
+
+.text-info p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--el-text-color-secondary);
+    line-height: 1.4;
+}
+
+/* =========================================
+   5. UtilityTools 子组件详情页样式
+   ========================================= */
+
+/* 通用容器 */
+.tool-pane {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 10px 0;
+}
+
+/* --- ToolTimeSync (时间校准) --- */
+.time-sync-container {
+    text-align: center;
+}
+
+.custom-status-banner {
+    display: flex;
+    align-items: flex-start;
+    padding: 24px;
+    border-radius: var(--app-radius-card);
+    transition: all 0.3s;
+    text-align: left;
+}
+
+.banner-success {
+    background-color: rgb(240, 249, 235);
+}
+
+.banner-warning {
+    background-color: rgb(253, 246, 236);
+}
+
+.banner-error {
+    background-color: rgb(254, 240, 240);
+}
+
+.dark .banner-success {
+    background-color: rgba(103, 194, 58, 0.1);
+}
+
+.dark .banner-warning {
+    background-color: rgba(230, 162, 60, 0.1);
+}
+
+.dark .banner-error {
+    background-color: rgba(245, 108, 108, 0.1);
+}
+
+.banner-icon {
+    font-size: 32px;
+    margin-right: 18px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.banner-success .banner-icon {
+    color: var(--el-color-success);
+}
+
+.banner-warning .banner-icon {
+    color: var(--el-color-warning);
+}
+
+.banner-error .banner-icon {
+    color: var(--el-color-danger);
+}
+
+.banner-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.banner-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--el-text-color-primary);
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.banner-desc {
+    font-size: 13px;
+    color: var(--el-text-color-secondary);
+    line-height: 1.5;
+}
+
+.clocks-wrapper {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.clock-card {
+    flex: 1;
+    background: var(--app-card-bg);
+    border: 1px solid var(--el-border-color-light);
+    border-radius: var(--app-radius-card);
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--el-box-shadow-light);
+}
+
+.clock-card.local {
+    border-top: 4px solid #409EFF;
+}
+
+.clock-card.server {
+    border-top: 4px solid #E6A23C;
+}
+
+.clock-label {
+    font-size: 14px;
+    color: var(--el-text-color-secondary);
+    margin-bottom: 10px;
+    display: block;
+}
+
+.clock-time {
+    font-size: 28px;
+    font-weight: bold;
+    font-family: monospace;
+    color: var(--el-text-color-primary);
+    margin-bottom: 5px;
+    display: block;
+}
+
+.clock-date {
+    font-size: 14px;
+    color: var(--el-text-color-regular);
+}
+
+.metrics-pill-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--el-fill-color-light);
+    border-radius: 30px;
+    /* highly rounded for pill look */
+    padding: 10px 24px;
+    margin-bottom: 30px;
+    margin-top: -10px;
+}
+
+.metric-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.metric-icon {
+    font-size: 16px;
+    color: var(--el-text-color-secondary);
+}
+
+.metric-label {
+    font-size: 13px;
+    color: var(--el-text-color-secondary);
+}
+
+.metric-value {
+    font-size: 15px;
+    font-family: monospace;
+    font-weight: bold;
+    color: var(--el-text-color-primary);
+    margin-left: 4px;
+}
+
+.metric-divider {
+    width: 1px;
+    height: 16px;
+    background-color: var(--el-border-color);
+    margin: 0 20px;
+}
+
+@media (max-width: 768px) {
+    .metrics-pill-container {
+        flex-direction: column;
+        width: 100%;
+        padding: 16px 0px;
+        gap: 12px;
+        border-radius: var(--app-radius-card);
+    }
+
+    .metric-divider {
+        display: none;
+    }
+}
+
+.sync-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.sync-tips {
+    margin-top: 40px;
+    text-align: left;
+    background: var(--el-fill-color-lighter);
+    padding: 20px;
+    border-radius: var(--app-radius-aux);
+}
+
+.sync-tips h4 {
+    margin: 0 0 10px;
+    font-size: 15px;
+    color: var(--el-text-color-primary);
+}
+
+.sync-tips ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--el-text-color-regular);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* --- ToolQrParser (二维码解析) --- */
+.qr-parser-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.upload-area {
+    width: 100%;
+}
+
+.upload-dragger {
+    width: 100%;
+    height: 250px;
+    border: 2px dashed var(--el-border-color);
+    border-radius: var(--app-radius-card);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: var(--app-card-bg);
+    transition: border-color 0.3s;
+    overflow: hidden;
+}
+
+.upload-dragger:hover {
+    border-color: #409EFF;
+}
+
+.upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.upload-placeholder p {
+    margin-top: 10px;
+    color: var(--el-text-color-secondary);
+}
+
+.preview-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.result-section {
+    width: 100%;
+}
+
+/* --- ToolPassword (密码生成) --- */
+.result-box {
+    background: var(--app-card-bg);
+    border: 1px solid var(--el-border-color);
+    border-radius: var(--app-radius-aux);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.password-display {
+    font-family: monospace;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--el-text-color-primary);
+    word-break: break-all;
+    margin-right: 10px;
+}
+
+.controls {
+    background: var(--app-card-bg);
+    padding: 10px;
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.control-row.checkboxes {
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.control-row .label {
+    min-width: 60px;
+    color: var(--el-text-color-regular);
+}
+
+@media (max-width: 768px) {
+    .clocks-wrapper {
+        flex-direction: column;
+    }
+
+    .control-row.checkboxes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+}
+
+/* --- ToolTotpSecret (TOTP 密钥工具) --- */
+/* Secret Config Redesign */
+.pill-tabs-container {
+    display: flex;
+    background: var(--el-fill-color-light);
+    border-radius: var(--app-radius-card);
+    padding: 4px;
+    margin-bottom: 20px;
+}
+
+.pill-tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--el-text-color-regular);
+    border-radius: var(--app-radius-aux);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+}
+
+.pill-tab:hover {
+    color: var(--el-color-primary);
+}
+
+.pill-tab.active {
+    background: var(--app-card-bg);
+    color: var(--el-color-primary);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.unified-input-card {
+    background: var(--app-card-bg);
+    border: 1px solid var(--el-border-color-light);
+    border-radius: var(--app-radius-card);
+    padding: 2px 2px 10px 2px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.seamless-textarea textarea {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    resize: none !important;
+    font-family: monospace;
+    font-size: 14px;
+    color: var(--el-text-color-primary);
+}
+
+.seamless-textarea .el-textarea__inner:focus {
+    box-shadow: none !important;
+}
+
+.inline-input-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    padding-right: 15px;
+    margin-top: -10px;
+}
+
+.totp-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.unified-preview-card {
+    background: var(--app-card-bg);
+    border: 1px solid var(--el-border-color-light);
+    border-radius: var(--app-radius-card);
+    padding: 30px 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.preview-layout-grid {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+@media (max-width: 768px) {
+    .preview-layout-grid {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+.qr-unified-wrapper {
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.qr-img-unified {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    /* Slight rounded corner for QR code image, if possible */
+}
+
+.uri-box {
+    margin-top: 15px;
+    background: var(--app-card-bg);
+    border-radius: var(--app-radius-aux);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.uri-text {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--el-text-color-regular);
+    word-break: break-all;
+    line-height: 1.4;
+}
+
+.config-section {
+    margin-bottom: 25px;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--el-text-color-primary);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.meta-row {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.meta-row .el-input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.advanced-row {
+    display: flex;
+    gap: 10px;
+}
+
+.label-text {
+    font-size: 14px;
+    color: var(--el-text-color-regular);
+    font-weight: 500;
+}
+
+.totp-unified-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+@media (max-width: 768px) {
+    .totp-unified-details {
+        align-items: center;
+    }
+}
+
+.totp-code-clickable {
+    cursor: pointer;
+    border-radius: var(--app-radius-aux);
+    transition: all 0.2s;
+    padding: 10px;
+    margin-left: -10px;
+    /* offset padding for alignment */
+}
+
+.totp-code-clickable:hover {
+    background-color: var(--el-color-primary-light-9);
+}
+
+.totp-code-giant {
+    font-size: 38px;
+    font-weight: 800;
+    color: var(--el-color-primary);
+    letter-spacing: 8px;
+    font-family: monospace;
+    transition: filter 0.3s;
+}
+
+.totp-code-giant.blur {
+    filter: blur(4px);
+    opacity: 0.6;
+}
+
+.totp-timer {
+    font-size: 14px;
+    color: var(--el-text-color-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.totp-timer.urgent {
+    color: #F56C6C;
+    font-weight: bold;
+}
+
+.tab-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.input-label {
+    margin-right: 12px;
+}
+
+/* 高级设置与时间偏差 组合容器 */
+.premium-config-group {
+    background: var(--el-fill-color-lighter);
+    border: 1px solid var(--app-border-refined);
+    border-radius: var(--app-radius-card);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+:global(html.dark) .premium-config-group {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* 优质折叠面板样式 */
+.premium-collapse {
+    border: none !important;
+    background: transparent !important;
+}
+
+.premium-collapse :deep(.el-collapse-item__header) {
+    background: var(--app-card-bg) !important;
+    border: 1px solid var(--app-border-refined) !important;
+    border-radius: var(--app-radius-aux) !important;
+    padding: 0 12px !important;
+    height: 48px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease;
+}
+
+.premium-collapse :deep(.el-collapse-item__header.is-active) {
+    border-bottom: 0px !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    background: var(--el-color-primary-light-9) !important;
+}
+
+.premium-collapse :deep(.el-collapse-item__wrap) {
+    background: var(--app-card-bg) !important;
+    border: 1px solid var(--app-border-refined) !important;
+    border-top: none !important;
+    border-bottom-left-radius: var(--app-radius-aux) !important;
+    border-bottom-right-radius: var(--app-radius-aux) !important;
+    padding: 0 12px;
+}
+
+.premium-collapse :deep(.el-collapse-item__content) {
+    padding: 16px 0 !important;
+}
+
+.premium-collapse-header {
+    display: flex;
+    align-items: center;
+    color: var(--el-text-color-primary);
+}
+
+/* 时间偏差控制区样式 */
+.time-travel-section {
+    margin-bottom: 0 !important;
+}
+
+.label-with-icon {
+    display: flex;
+    align-items: center;
+}
+
+.time-travel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--app-card-bg);
+    border: 1px solid var(--app-border-refined);
+    border-radius: var(--app-radius-aux);
+    padding: 8px 12px;
+}
+
+.offset-display {
+    display: flex;
+    flex-direction: column;
+}
+
+.offset-label {
+    font-size: 11px;
+    color: var(--el-text-color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.offset-value {
+    font-family: monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--el-text-color-regular);
+}
+
+.offset-value.has-offset {
+    color: var(--el-color-primary);
+}
+
+/* 分段点击控制 */
+.segmented-control {
+    display: flex !important;
+    border: 1px solid var(--app-border-refined);
+    border-radius: var(--app-radius-aux);
+    overflow: hidden;
+}
+
+.segmented-control .el-button {
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 8px 16px !important;
+}
+
+.segmented-control .el-button:first-child {
+    border-right: 1px solid var(--app-border-refined) !important;
+}
+
+.segmented-control .el-button:hover {
+    background-color: var(--el-fill-color-light) !important;
+}
+
+/* --- ToolAppsReview (App 评测) --- */
+.apps-review-container {
+    padding: 10px 0;
+}
+
+.apps-review-card {
+    background: var(--app-card-bg);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: var(--app-radius-card);
+    height: 100%;
+    /* Stretch to row max height */
+    display: flex;
+    flex-direction: column;
+}
+
+.apps-review-card .el-card__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.apps-review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.apps-review-card-header {
+    margin-bottom: 12px;
+}
+
+.apps-review-card-name {
+    margin: 0px 0px 12px 0px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.apps-review-card-logo {
+    flex-shrink: 0;
+}
+
+.apps-review-card-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    /* 空间不够时允许换行 */
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.apps-review-platform-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--app-radius-aux);
+    color: var(--el-text-color-regular);
+    font-size: 16px;
+    text-decoration: none !important;
+}
+
+.apps-review-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--el-text-color-regular);
+}
+
+.apps-review-detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.5;
+}
+
+.apps-review-detail-item .label {
+    font-weight: 500;
+    min-width: 85px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.apps-review-summary-box {
+    margin-top: 8px;
+    padding: 12px;
+    background-color: var(--app-card-bg);
+    border-radius: var(--app-radius-aux);
+    font-size: 13px;
+    line-height: 1.5;
+    border-left: 3px solid var(--el-color-primary);
+}
+
+.apps-review-summary-danger {
+    background-color: var(--el-color-danger-light-9);
+    border-left: 3px solid var(--el-color-danger);
+}
+
+:global(html.dark) .apps-review-summary-danger {
+    background-color: rgba(245, 108, 108, 0.1);
+}
+
+@media (max-width: 768px) {
+    .apps-review-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .apps-review-detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .apps-review-detail-item .label {
+        margin-bottom: 2px;
+    }
+}

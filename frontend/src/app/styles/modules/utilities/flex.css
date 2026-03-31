@@ -1,0 +1,54 @@
+/* Flexbox Utilities */
+.flex {
+    display: flex !important;
+}
+
+.flex-column {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.flex-center {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.flex-between {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.flex-items-center {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.flex-wrap {
+    flex-wrap: wrap !important;
+}
+
+.flex-1 {
+    flex: 1 !important;
+}
+
+.gap-5 {
+    gap: 5px !important;
+}
+
+.gap-8 {
+    gap: 8px !important;
+}
+
+.gap-10 {
+    gap: 10px !important;
+}
+
+.gap-15 {
+    gap: 15px !important;
+}
+
+.gap-20 {
+    gap: 20px !important;
+}

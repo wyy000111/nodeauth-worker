@@ -1,0 +1,40 @@
+/* 
+ * nodeauth Global Styles
+ * Organized using a modular structure (BEM-lite / Pattern based)
+ */
+
+/* 1. Base & Variables */
+@import './modules/base/variables.css';
+@import './modules/base/reset.css';
+
+/* 2. Utility Classes (Atomic Utilities) */
+@import './modules/utilities/flex.css';
+@import './modules/utilities/spacing.css';
+@import './modules/utilities/sizing.css';
+@import './modules/utilities/typography.css';
+@import './modules/utilities/misc.css';
+
+/* 3. Global Layout Components */
+@import './modules/layout/containers.css';
+@import './modules/layout/header.css';
+@import './modules/layout/sidebar.css';
+@import './modules/layout/footer.css';
+@import './modules/layout/mobile.css';
+
+/* 4. Feature Components Styles */
+@import './modules/components/shared.css';
+@import './modules/components/home.css';
+@import './modules/components/auth.css';
+@import './modules/components/vault.css';
+@import './modules/components/backup.css';
+@import './modules/components/migration.css';
+@import './modules/components/tools.css';
+@import './modules/components/health.css';
+@import './modules/components/passkey.css';
+@import './modules/components/emergency.css';
+@import './modules/components/about.css';
+@import './modules/components/language.css';
+@import './modules/components/theme.css';
+@import './modules/components/security.css';
+@import './modules/components/devices.css';
+@import './modules/components/appearance.css';

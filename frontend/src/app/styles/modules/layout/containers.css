@@ -1,0 +1,128 @@
+/* App.vue */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+}
+
+/* Blank Layout Synchronization (Brings mobile full-scroll to PC) */
+.is-blank-layout {
+    height: auto !important;
+    min-height: 100vh;
+    overflow: visible !important;
+}
+
+main {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    main {
+        overflow: visible;
+    }
+}
+
+.is-blank-layout main {
+    overflow: visible !important;
+}
+
+/* App Shell (Global Loading Overlay) */
+.global-app-shell {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background-color: var(--el-bg-color-page);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.shell-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.shell-spinner {
+    animation: loading-rotate 2s linear infinite;
+}
+
+/* Layout Wrappers (Main / Blank) */
+.layout-main,
+.layout-blank {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.layout-main-content,
+.layout-blank-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Home.vue */
+.home-container {
+    height: 100%;
+    background-color: var(--el-bg-color-page);
+}
+
+.main-body {
+    height: 100%;
+    display: flex;
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+
+    .home-container,
+    .main-body {
+        height: auto;
+        min-height: calc(100vh - 120px);
+        overflow: visible;
+    }
+}
+
+.main-content {
+    width: 100%;
+    background-color: var(--el-bg-color-page);
+    /* 原为 auto，修改为保留滚动空间防止因高度变化产生的抖动，或直接将滚动条悬浮覆盖 */
+    overflow-y: overlay;
+    scrollbar-gutter: stable;
+}
+
+.el-icon.is-loading {
+    color: var(--el-color-primary) !important;
+}
+
+div.is-loading {
+    color: var(--el-color-primary);
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        overflow: visible !important;
+        overflow-y: visible !important;
+        overflow-x: visible !important;
+        scrollbar-gutter: auto;
+        padding-bottom: calc(85px + env(safe-area-inset-bottom)) !important;
+    }
+}

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="format-detection" content="telephone=no, email=no, address=no" />
+  <title>NodeAuth - A Secure 2FA Management Tool.</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+    }
+
+    .splash-logo-container {
+      /* 使用 fixed 居中，防止干扰 #app 挂载后的正常布局 */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #f5f7fa;
+      z-index: 9999;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .splash-logo {
+      color: #3F9FFF;
+      width: 64px;
+      height: 64px;
+      filter: drop-shadow(0 0 10px rgba(63, 159, 255, 0.3));
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+
+      50% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="splash-logo-container">
+      <img src="/logo.svg?20260332" alt="NodeAuth" class="splash-logo" />
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

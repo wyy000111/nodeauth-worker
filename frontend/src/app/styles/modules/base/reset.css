@@ -1,0 +1,169 @@
+/* =========================================
+   0. 强制同步修复 (Force Sync)
+   ========================================= */
+/* 核心修复：强制禁用所有元素的过渡动画，确保深浅色切换瞬间完成，消除不同步感 */
+*,
+*::before,
+*::after {
+    transition: none !important;
+}
+
+/* =========================================
+   1. 全局基础样式 (Global Reset & Base)
+   ========================================= */
+html,
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: fixed;
+    /* 锁定根部，防止移动端橡皮筋及双滚动条 */
+    overscroll-behavior: none;
+    background-color: var(--el-bg-color-page);
+    color: var(--el-text-color-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 内部全屏滚动容器：提升 PWA 沉浸感与原生感 */
+#app {
+    height: 100dvh;
+    /* 适配移动端状态栏高度 */
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+}
+
+/* 隐藏所有原生滚动条 (针对 iOS WebKit 强化) */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar,
+#app::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+}
+
+* {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+/* 基础排版与链接 */
+a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+/* 仅在支持鼠标悬停的设备上应用 A 标签 hover 变色，防止移动端点击后文字变蓝 */
+@media (hover: hover) {
+    a:hover {
+        color: #409EFF;
+    }
+}
+
+/* 通用组件样式 */
+.tab-card-wrapper {
+    background: var(--app-card-bg);
+    padding: 20px;
+    border-radius: var(--app-radius-card);
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+    min-height: 400px;
+}
+
+@media (max-width: 768px) {
+    .tab-card-wrapper {
+        background: none;
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
+        min-height: 0;
+    }
+}
+
+/* 1. 统一 Hover 状态逻辑 */
+.el-card:hover,
+.migration-platform-card:hover {
+    border-color: var(--app-border-active) !important;
+}
+
+@media screen and (max-width: 768px) {
+
+    /* 1. 统一 Hover 状态逻辑 */
+    .el-card:hover,
+    .migration-platform-card:hover {
+        border-color: var(--app-border-refined) !important;
+    }
+}
+
+/* =========================================
+   2. 全局组件库覆盖 (Library Overrides)
+   ========================================= */
+.el-card {
+    border-radius: var(--app-radius-card) !important;
+}
+
+.el-button:not(.is-circle):not(.circle) {
+    border-radius: var(--app-radius-aux) !important;
+}
+
+.el-button {
+    background-clip: padding-box !important;
+}
+
+/* 修复移动端点击按钮后保留 :hover 状态的问题 (Sticky Hover) */
+@media (hover: hover) {
+    .el-button:hover {
+        background-clip: padding-box !important;
+    }
+}
+
+@media (hover: none),
+screen and (max-width: 768px) {
+    .el-button:hover {
+        /* 在触摸屏上，强制 hover 状态回退到基础变量，防止点击后颜色不消失 */
+        background-color: var(--el-button-bg-color) !important;
+        color: var(--el-button-text-color) !important;
+    }
+
+    /* 针对幽灵按钮 (Plain) 或 Link 按钮的特殊回退 */
+    .el-button.is-plain:hover {
+        background-color: var(--el-fill-color-blank) !important;
+    }
+
+    .el-button.is-text:hover {
+        background-color: transparent !important;
+    }
+}
+
+.el-input__wrapper {
+    border-radius: var(--app-radius-aux) !important;
+}
+
+.el-dialog,
+.el-message-box,
+.el-notification {
+    border-radius: var(--app-radius-card) !important;
+}
+
+/* =========================================
+   3. iOS 输入放缩修复 (iOS Input Zoom Fix)
+   ========================================= */
+/* 当 font-size 小于 16px 时，iOS Safari 会在聚焦时自动放大页面。
+   通过全局设置移动端最小 16px 解决此问题。 */
+@media screen and (max-width: 768px) {
+
+    input,
+    textarea,
+    select,
+    .el-input__inner,
+    .el-textarea__inner,
+    .el-input__wrapper {
+        font-size: 16px !important;
+    }
+}

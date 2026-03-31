@@ -1,0 +1,46 @@
+name: Deploy To Tencent EdgeOne
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  edgeone:
+    name: Build & Deploy Frontend
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Build Frontend
+        working-directory: frontend
+        run: npm run build
+        env:
+          EDGEONE_PAGES_BACKEND_API_URL: ${{ secrets.EDGEONE_PAGES_BACKEND_API_URL }}
+
+      - name: Install EdgeOne CLI
+        run: npm install -g edgeone
+
+      - name: Deploy to EdgeOne Pages
+        working-directory: frontend
+        env:
+          EDGEONE_PAGES_TOKEN: ${{ secrets.EDGEONE_PAGES_TOKEN }}
+          EDGEONE_PAGES_PROJECT_NAME: ${{ secrets.EDGEONE_PAGES_PROJECT_NAME }}
+        run: |
+          # 使用 edgeone 官方 CLI 进行部署
+          edgeone pages deploy ./dist -n $EDGEONE_PAGES_PROJECT_NAME --token $EDGEONE_PAGES_TOKEN

@@ -1,0 +1,280 @@
+/* Shared Component Patterns */
+
+/* 1. Confirmation Box (Used in ElMessageBox with h() function) */
+.confirmation-box {
+    text-align: left;
+    background: var(--el-fill-color-light);
+    padding: 16px;
+    border-radius: var(--app-radius-aux);
+    border: 1px solid var(--el-border-color-lighter);
+    margin-top: 10px;
+}
+
+.confirmation-row {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.confirmation-row:last-child {
+    margin-bottom: 0;
+}
+
+.confirmation-label {
+    color: var(--el-text-color-secondary);
+    width: 70px;
+    flex-shrink: 0;
+}
+
+.confirmation-value {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--el-text-color-primary);
+    word-break: break-all;
+}
+
+.confirmation-value.mono {
+    font-family: monospace;
+    font-size: 14px;
+    background: var(--el-fill-color-darker);
+    padding: 4px 8px;
+    border-radius: var(--app-radius-aux);
+    color: var(--el-color-primary);
+}
+
+.confirmation-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.confirmation-tag {
+    padding: 2px 8px;
+    border-radius: var(--app-radius-aux);
+    font-size: 12px;
+    border: 1px solid transparent;
+}
+
+.confirmation-tag-info {
+    background: var(--el-color-info-light-9);
+    color: var(--el-color-info);
+    border-color: var(--el-color-info-light-7);
+}
+
+.confirmation-tag-success {
+    background: var(--el-color-success-light-9);
+    color: var(--el-color-success);
+    border-color: var(--el-color-success-light-7);
+}
+
+.confirmation-tag-warning {
+    background: var(--el-color-warning-light-9);
+    color: var(--el-color-warning);
+    border-color: var(--el-color-warning-light-7);
+}
+
+/* 2. Global Offline Banner (App.vue) */
+.global-offline-banner {
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid var(--el-border-color-lighter);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 20px 16px !important;
+}
+
+@media (max-width: 768px) {
+    .global-offline-banner {
+        padding: 10px 16px !important;
+    }
+}
+
+.global-offline-banner .el-alert__content {
+    padding: 0 8px;
+}
+
+.global-offline-banner .el-alert__title {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.global-offline-banner .el-alert__close-btn {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 3. QrScanner Component */
+.add-vault-wrapper .tab-card-wrapper {
+    padding-bottom: 40px;
+}
+
+.qr-scanner-container {
+    width: 100%;
+}
+
+.qr-scanner-selector {
+    margin-bottom: 20px;
+}
+
+.camera-placeholder {
+    height: 250px;
+    border: 2px dashed var(--el-border-color);
+    border-radius: var(--app-radius-card);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: var(--el-fill-color-lighter);
+    transition: all 0.3s;
+}
+
+.camera-placeholder:hover {
+    border-color: var(--el-color-primary);
+    background: var(--el-fill-color-light);
+}
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    background: #000;
+    border-radius: var(--app-radius-card);
+    overflow: hidden;
+}
+
+.video-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.scan-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid rgba(64, 158, 252, 0.4);
+    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5);
+}
+
+.scan-line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: #409eff;
+    top: 0;
+    box-shadow: 0 0 10px #409eff;
+    animation: scan-anim 2s infinite linear;
+}
+
+@keyframes scan-anim {
+    0% {
+        top: 0%;
+    }
+
+    100% {
+        top: 100%;
+    }
+}
+
+.image-preview {
+    height: 250px;
+    border: 2px dashed var(--el-border-color);
+    border-radius: var(--app-radius-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.preview-img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: var(--app-radius-card);
+}
+
+.upload-placeholder {
+    text-align: center;
+}
+
+/* 4. Page Headers & Descriptions (Premium Architecture) */
+.page-header-container {
+    text-align: center;
+    margin-bottom: 32px;
+    position: relative;
+    padding-top: 10px;
+}
+
+/* Premium Hero Section */
+.page-header-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.hero-icon-wrapper {
+    display: none;
+    /* Desktop 默认隐藏图标 */
+    width: 64px;
+    height: 64px;
+    background: var(--el-color-primary-light-9);
+    border-radius: 18px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    color: var(--el-color-primary);
+    box-shadow: 0 8px 16px rgba(64, 158, 252, 0.1);
+}
+
+.page-header-hero h2 {
+    margin: 0;
+    margin-bottom: 4px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.page-desc-text {
+    margin: 0 auto;
+    max-width: 85%;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--el-text-color-secondary);
+    text-align: center;
+    word-break: break-word;
+    font-weight: 400;
+}
+
+@media (max-width: 768px) {
+    .page-header-container {
+        margin-bottom: 20px;
+        padding-top: 15px;
+    }
+
+    .page-header-hero {
+        margin-bottom: 8px;
+    }
+
+    .hero-icon-wrapper {
+        display: flex;
+        /* Mobile 展示图标 */
+        width: 56px;
+        height: 56px;
+        margin-bottom: 12px;
+        border-radius: 16px;
+    }
+
+    .page-desc-text {
+        margin-top: 0;
+        margin-bottom: 24px;
+        font-size: 14px;
+        line-height: 1.4;
+        padding: 0 24px;
+        color: var(--el-text-color-regular);
+        opacity: 0.85;
+    }
+}

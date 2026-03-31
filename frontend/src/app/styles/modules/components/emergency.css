@@ -1,0 +1,350 @@
+.emergency-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--el-bg-color-page);
+  padding: 80px 20px 60px;
+}
+
+.protocol-wrapper {
+  max-width: 720px;
+  width: 100%;
+  background: var(--app-card-bg);
+  border-radius: var(--app-radius-card);
+  box-shadow: var(--el-box-shadow-light);
+  overflow: hidden;
+  border: 1px solid var(--el-border-color-lighter);
+}
+
+/* Header - More balanced and adaptive */
+.protocol-header {
+  padding: 48px 40px 32px;
+  background: var(--app-card-bg);
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.header-text h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--el-text-color-primary);
+  letter-spacing: -0.02em;
+}
+
+.protocol-subtitle {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--el-text-color-secondary);
+  line-height: 1.5;
+}
+
+/* Stepper */
+.protocol-stepper {
+  padding: 32px 40px;
+}
+
+.step-box {
+  display: flex;
+  gap: 24px;
+  padding: 32px;
+  border-radius: var(--app-radius-aux);
+  background: var(--el-fill-color-blank);
+  border: 1px solid var(--el-border-color-lighter);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.step-box.is-active {
+  border-color: var(--el-color-primary-light-5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.step-box.is-completed {
+  border-color: var(--el-color-success-light-5);
+  background: var(--el-color-success-light-9);
+}
+
+.step-box.is-locked {
+  opacity: 0.6;
+  background: var(--el-fill-color-lighter);
+}
+
+.step-number {
+  font-family: 'Inter', sans-serif;
+  font-size: 64px;
+  font-weight: 900;
+  color: var(--el-text-color-placeholder);
+  line-height: 1;
+  opacity: 0.15;
+  position: absolute;
+  right: 24px;
+  bottom: 16px;
+  z-index: -1;
+  /* Ensure it stays behind buttons/content */
+  pointer-events: none;
+}
+
+.step-content {
+  flex: 1;
+  z-index: 2;
+}
+
+.step-content h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+}
+
+.step-content p {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--el-text-color-regular);
+  line-height: 1.6;
+}
+
+.huge-download-btn {
+  height: 44px;
+  padding: 0 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--app-radius-aux);
+}
+
+.step-divider {
+  height: 24px;
+  width: 1px;
+  background: var(--el-border-color-lighter);
+  margin-left: 56px;
+}
+
+.step-status {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  font-size: 20px;
+}
+
+/* Verify Area */
+.verify-input-group {
+  display: flex;
+  gap: 12px;
+  max-width: 400px;
+}
+
+.huge-verify-input .el-input__inner {
+  height: 44px;
+  font-family: ui-monospace, monospace;
+  font-size: 18px;
+  letter-spacing: 6px;
+  text-align: center;
+  border-radius: var(--app-radius-aux);
+}
+
+.huge-verify-btn {
+  height: 44px;
+  padding: 0 20px;
+  font-weight: 600;
+  border-radius: var(--app-radius-aux);
+}
+
+/* Info Footer - Brighter and stronger prominence */
+.protocol-info-footer {
+  padding: 40px;
+  background: var(--el-fill-color-blank);
+  border-top: 1px solid var(--el-border-color-lighter);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.info-cell {
+  background: var(--el-fill-color-extra-light);
+  padding: 24px;
+  border-radius: var(--app-radius-card);
+  border: 1px solid var(--el-border-color-extra-light);
+}
+
+.cell-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.cell-header .el-icon {
+  font-size: 20px;
+  color: var(--el-color-primary);
+}
+
+.info-cell:nth-child(2) .cell-header .el-icon {
+  color: var(--el-color-warning);
+}
+
+.info-cell label {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.info-cell p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--el-text-color-secondary);
+  line-height: 1.6;
+}
+
+/* Mobile Adaptation Enhanced */
+@media (max-width: 640px) {
+  .emergency-container {
+    padding: 0;
+  }
+
+  .protocol-wrapper {
+    border-radius: 0;
+    min-height: 100vh;
+    border: none;
+    box-shadow: none;
+  }
+
+  .protocol-header {
+    padding: 40px 24px 24px;
+  }
+
+  .header-text h1 {
+    font-size: 22px;
+  }
+
+  .protocol-stepper {
+    padding: 20px;
+  }
+
+  .step-box {
+    padding: 24px 20px;
+    gap: 16px;
+  }
+
+  .step-number {
+    font-size: 48px;
+    right: 16px;
+    bottom: 12px;
+  }
+
+  .step-divider {
+    margin: 0 0 0 24px;
+  }
+
+  .verify-input-group {
+    flex-direction: column;
+    max-width: 100%;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .protocol-info-footer {
+    padding: 24px 20px;
+  }
+}
+
+/* PDF Document Style (Unchanged as it's for print) */
+.pdf-document {
+  width: 210mm;
+  padding: 15mm 20mm;
+  color: #0f172a;
+  background: white;
+  font-family: sans-serif;
+}
+
+.doc-header {
+  border-bottom: 4px solid #3b82f6;
+  padding-bottom: 10mm;
+  margin-bottom: 15mm;
+}
+
+.doc-brand {
+  font-size: 20pt;
+  font-weight: 300;
+  color: #64748b;
+  margin-bottom: 2mm;
+}
+
+.doc-protocol {
+  font-size: 36pt;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.doc-id {
+  font-family: monospace;
+  font-size: 12pt;
+  color: #94a3b8;
+  margin-top: 4mm;
+}
+
+.info-grid-pdf {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10mm;
+  margin-bottom: 15mm;
+}
+
+.doc-key-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 8mm 12mm;
+  border-radius: 4mm;
+  margin-bottom: 10mm;
+}
+
+.doc-key-section h2 {
+  margin: 0 0 8mm;
+  font-size: 16pt;
+}
+
+.doc-key-box {
+  background: white;
+  padding: 12mm;
+  font-family: monospace;
+  font-size: 28pt;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  word-break: break-all;
+  box-shadow: 0 4pt 6pt -1pt rgba(0, 0, 0, 0.1);
+}
+
+.doc-warning {
+  color: #ef4444;
+  font-weight: 700;
+  margin-top: 8mm;
+  font-size: 12pt;
+}
+
+.doc-usage h3,
+.doc-legal h3 {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 2mm;
+  margin-bottom: 4mm;
+  font-size: 14pt;
+}
+
+.doc-footer {
+  margin-top: 10mm;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 5mm;
+  text-align: center;
+  font-size: 10pt;
+  color: #94a3b8;
+}

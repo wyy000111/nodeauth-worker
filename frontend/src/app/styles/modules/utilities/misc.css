@@ -1,0 +1,85 @@
+/* Miscellaneous Utilities */
+.pointer-help {
+    cursor: help !important;
+}
+
+.pointer-none {
+    pointer-events: none !important;
+}
+
+.display-none {
+    display: none !important;
+}
+
+.display-block {
+    display: block !important;
+}
+
+.display-inline-b {
+    display: inline-block !important;
+}
+
+.overflow-hidden {
+    overflow: hidden !important;
+}
+
+.overflow-visible {
+    overflow: visible !important;
+}
+
+.overflow-auto {
+    overflow: auto !important;
+}
+
+/* Border Utilities */
+.border-none {
+    border: none !important;
+}
+
+.border-1 {
+    border: 1px solid var(--el-border-color) !important;
+}
+
+.rounded-4 {
+    border-radius: 4px !important;
+}
+
+.rounded-6 {
+    border-radius: 6px !important;
+}
+
+.rounded-8 {
+    border-radius: 8px !important;
+}
+
+.rounded-10 {
+    border-radius: 10px !important;
+}
+
+.rounded-12 {
+    border-radius: 12px !important;
+}
+
+.rounded-16 {
+    border-radius: 16px !important;
+}
+
+.rounded-full {
+    border-radius: 50% !important;
+}
+
+.shadow-light {
+    box-shadow: var(--el-box-shadow-light) !important;
+}
+
+.shadow-none {
+    box-shadow: none !important;
+}
+
+.ls-1 {
+    letter-spacing: 1px !important;
+}
+
+.ls-2 {
+    letter-spacing: 2px !important;
+}

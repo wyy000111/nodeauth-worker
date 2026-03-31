@@ -1,0 +1,105 @@
+/* Passkey 列表组件与原子类优化 */
+.passkey-wrapper .tab-card-wrapper {
+    padding-bottom: 40px;
+}
+
+.passkey-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.passkey-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+/* --- Passkey 卡片设计系统 --- */
+.passkey-item-card {
+    height: 100%;
+    border-radius: var(--app-radius-card) !important;
+    border: 0.5px solid var(--app-border-refined) !important;
+    overflow: hidden;
+    background: var(--app-card-bg);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+
+.passkey-item-card .el-card__header {
+    border-bottom: 0.5px solid var(--app-border-refined) !important;
+    padding: 12px 16px;
+}
+
+.passkey-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.passkey-name-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+.passkey-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.passkey-name:hover {
+    color: var(--el-color-primary);
+}
+
+/* --- 卡片内容体优化 --- */
+.passkey-item-body {
+    padding: 10px 0 6px 0;
+}
+
+.passkey-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 通行密钥信息条目：还原高效左右布局 */
+.passkey-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.passkey-info-item .label {
+    font-size: 14px;
+    color: var(--el-text-color-secondary);
+    opacity: 0.7;
+}
+
+.passkey-info-item .detail {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--el-text-color-primary);
+    font-family: var(--font-mono, monospace);
+    letter-spacing: 0.2px;
+}
+
+/* --- 移动端响应式补丁 --- */
+@media (max-width: 768px) {
+    .passkey-item-card .el-card__body {
+        padding: 12px 16px !important;
+    }
+
+    .passkey-item-card .el-card__header {
+        border-bottom: 0.5px solid var(--app-border-refined) !important;
+    }
+}

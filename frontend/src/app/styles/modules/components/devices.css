@@ -1,0 +1,212 @@
+.device-management-view {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.device-header-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.device-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 200px;
+}
+
+.session-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-radius: var(--app-radius-card);
+    background-color: var(--app-card-bg);
+    border: 0.5px solid var(--app-border-refined);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.session-item:hover {
+    box-shadow: var(--el-box-shadow-lighter);
+    border-color: var(--el-border-color);
+}
+
+.session-item.is-current {
+    border: 1px solid var(--el-color-success);
+    background-color: var(--el-color-success-light-9) !important;
+}
+
+.session-info-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.device-icon {
+    color: var(--el-text-color-secondary);
+    background: var(--el-fill-color-lighter);
+    padding: 12px;
+    border-radius: 50%;
+}
+
+.session-item.is-current .device-icon {
+    color: var(--el-color-success);
+    background: var(--el-color-success-light-8);
+}
+
+.session-details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.session-status-row {
+    margin-top: 4px;
+}
+
+.session-account-info {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--el-text-color-secondary);
+    font-family: var(--font-mono, monospace);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 0.7;
+    width: 100%;
+    overflow: hidden;
+}
+
+.info-provider {
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--el-color-primary);
+    opacity: 0.8;
+    flex-shrink: 0;
+}
+
+.info-user {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+}
+
+.session-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.device-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--el-text-color-primary);
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.current-badge-inline {
+    font-weight: bold;
+    height: 20px;
+    padding: 0 6px;
+}
+
+.session-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    column-gap: 12px;
+    row-gap: 6px;
+    font-size: 13px;
+    color: var(--el-text-color-secondary);
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.session-action-right {
+    display: flex;
+    align-items: center;
+}
+
+.session-status-tag {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--el-color-success);
+}
+
+.session-status-tag .el-icon {
+    margin-right: 2px;
+}
+
+@media screen and (max-width: 600px) {
+    .session-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .session-info-left {
+        align-items: flex-start;
+    }
+
+    .device-name {
+        max-width: 180px;
+        font-size: 15px;
+    }
+
+    .session-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px !important;
+    }
+
+    .meta-item {
+        font-size: 12px;
+    }
+
+    .session-action-right {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        border-top: 0.5px solid var(--el-border-color-lighter);
+        padding-top: 5px;
+        margin-bottom: -10px;
+    }
+
+    .session-status-tag {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .session-status-tag .el-tag {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        height: auto;
+        padding: 4px 0;
+        line-height: 1.6;
+    }
+
+    .session-status-tag .el-icon {
+        margin-right: 4px;
+        margin-bottom: 0;
+        font-size: 14px;
+    }
+}

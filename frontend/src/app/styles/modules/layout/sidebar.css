@@ -1,0 +1,121 @@
+/* LeftAside, SideMenu */
+.left-aside {
+    background: var(--app-card-bg);
+    border-right: 1px solid var(--el-border-color-light);
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    white-space: nowrap;
+}
+
+/* 视觉优化：隐藏侧边栏滚动条，保持界面清爽 */
+.left-aside::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+.side-menu {
+    border-right: none;
+    padding-top: 10px;
+    flex: 1;
+}
+
+.sidebar-footer {
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.sidebar-footer .el-button {
+    margin-left: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-footer.is-collapsed {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.drawer-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Mobile Drawer User Info Card --- */
+.user-info-card {
+    margin: 0px 20px 0px 20px;
+    padding-bottom: 20px;
+    border-bottom: 0.2px solid var(--el-border-color-lighter);
+}
+
+.user-card-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-avatar {
+    flex-shrink: 0;
+    border: 2px solid var(--el-color-primary-light-8);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.user-detail {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.user-name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+}
+
+.user-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #909399;
+    /* 默认灰色 */
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.status-dot.is-online {
+    background-color: #67C23A;
+    /* 在线绿色 */
+    box-shadow: 0 0 4px rgba(103, 194, 58, 0.5);
+}
+
+.user-provider {
+    font-size: 11px;
+    color: var(--el-text-color-secondary);
+    background: var(--el-fill-color);
+    padding: 1px;
+    border-radius: 2px;
+    display: inline-block;
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}

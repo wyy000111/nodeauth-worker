@@ -1,0 +1,395 @@
+/* Migration & Backup (DataImport.vue & DataExport.vue) */
+
+.migration-export-groups {
+    max-width: 100%;
+    margin: 10px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.migration-export-group-card {
+    padding: 5px 0;
+    /* Removing side padding as well to align with parents */
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.migration-group-header {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: var(--el-text-color-primary);
+}
+
+.migration-group-header .el-icon {
+    margin-right: 8px;
+    font-size: 18px;
+    color: var(--el-color-primary);
+}
+
+.migration-button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.migration-button-row .el-button {
+    margin-left: 0;
+}
+
+.migration-button-with-icon {
+    cursor: pointer !important;
+    border-radius: var(--app-radius-aux) !important;
+    padding: 6px 14px !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+    font-size: 13px !important;
+    transition: all 0.2s ease-in-out !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px !important;
+    border-color: var(--el-border-color-lighter) !important;
+}
+
+.el-divider--horizontal {
+    border-top: 0.5px solid var(--app-border-refined);
+}
+
+.migration-button-with-icon:hover {
+    border-color: var(--el-color-primary) !important;
+    color: var(--el-color-primary) !important;
+    background-color: var(--el-color-primary-light-9) !important;
+    transform: translateY(-1px);
+}
+
+.migration-button-with-icon:active {
+    transform: translateY(0);
+}
+
+.migration-button-with-icon .el-icon,
+.migration-button-with-icon svg {
+    font-size: 16px;
+    margin-right: 2px !important;
+}
+
+/* 账号选择列表样式 */
+.migration-account-select-toolbar {
+    margin-bottom: 10px;
+}
+
+.migration-toolbar-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5px;
+    margin-bottom: 10px;
+}
+
+.migration-selected-count {
+    font-size: 13px;
+    color: var(--el-text-color-secondary);
+}
+
+.migration-account-list-container {
+    border: 0.5px solid var(--app-border-refined);
+    border-radius: var(--app-radius-aux);
+    background: var(--app-card-bg);
+    padding: 5px;
+}
+
+.migration-account-item {
+    padding: 8px 10px;
+    border-bottom: 0.5px solid var(--app-border-refined);
+}
+
+.migration-account-item:last-child {
+    border-bottom: none;
+}
+
+.migration-account-item-content {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+    line-height: 1.2;
+}
+
+.migration-account-item .service-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+    margin-bottom: 4px;
+}
+
+.migration-account-item .account-name {
+    font-size: 13px;
+    color: var(--el-text-color-regular);
+}
+
+/* DataImport.vue Specific */
+.migration-import-upload {
+    margin-top: 20px;
+}
+
+.migration-import-upload .el-upload-dragger {
+    padding: 40px;
+    background-color: var(--app-card-bg);
+    border-color: var(--el-border-color);
+}
+
+.migration-import-upload .el-upload-dragger:hover {
+    border-color: var(--el-color-primary);
+}
+
+.migration-import-upload .el-icon--upload {
+    font-size: 48px;
+    color: var(--el-text-color-secondary);
+    margin-bottom: 20px;
+}
+
+/* 生态支持矩阵 (Ecosystem Grid) - DataImport.vue */
+.migration-ecosystem {
+    margin-top: 40px;
+}
+
+.compatibility-container {
+    padding: 0;
+}
+
+.ecosystem-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ecosystem-group-card {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 5px 0;
+}
+
+
+.group-title {
+    margin: 0 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    color: var(--el-text-color-primary);
+    font-weight: 700;
+}
+
+.ecosystem-grid,
+.migration-platform-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 15px;
+}
+
+/* 移动端降级处理 */
+@media (max-width: 768px) {
+    .migration-platform-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+}
+
+.migration-platform-card {
+    cursor: pointer;
+    background: var(--app-card-bg);
+    border: 0.5px solid var(--app-border-refined);
+    border-radius: var(--app-radius-card);
+    padding: 20px 10px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.migration-platform-card .el-card__header {
+    border-bottom: 0.5px solid var(--app-border-refined) !important;
+    padding: 12px 16px;
+}
+
+/* 深色模式适配 */
+html.dark .migration-platform-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--app-border-refined);
+}
+
+
+
+
+
+.migration-platform-card:active {
+    transform: translateY(-1px);
+}
+
+.migration-platform-card .platform-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: var(--el-text-color-primary);
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+html.dark .migration-platform-card .platform-icon {
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.15));
+}
+
+.migration-platform-card:hover .platform-icon {
+    transform: scale(1.1);
+}
+
+.migration-platform-card .platform-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+    margin-bottom: 4px;
+}
+
+.migration-platform-card .platform-ext {
+    font-size: 11px;
+    color: var(--el-text-color-secondary);
+    opacity: 0.8;
+}
+
+/* 详细引导 (Tip Sections) */
+.guide-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.migration-ga-tip,
+.migration-ms-tip {
+    padding: 12px 18px;
+    border-radius: var(--app-radius-card);
+}
+
+.migration-ga-tip {
+    background-color: var(--el-color-primary-light-9);
+    color: var(--el-color-primary);
+}
+
+.migration-ms-tip {
+    background-color: var(--el-color-success-light-9);
+    color: var(--el-color-success);
+}
+
+.migration-ga-tip span,
+.migration-ms-tip span,
+.migration-steam-tip span {
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.ms-path-label {
+    margin-top: 8px;
+    font-size: 11px;
+    opacity: 0.8;
+    font-weight: 600;
+}
+
+.migration-ga-tip p,
+.migration-ms-tip p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.6;
+    opacity: 0.9;
+    color: inherit;
+}
+
+.migration-ms-tip code,
+.migration-steam-tip code {
+    display: block;
+    margin-top: 6px;
+    font-family: var(--el-font-family-mono);
+    font-size: 11px;
+    word-break: break-all;
+    color: var(--el-text-color-regular);
+}
+
+html.dark .migration-ms-tip code,
+html.dark .migration-steam-tip code {
+    color: var(--el-text-color-secondary);
+}
+
+.el-divider__text {
+    background-color: var(--app-card-bg) !important;
+}
+
+/* dataMigration.vue */
+.migration-container {
+    padding: 10px;
+}
+
+.migration-tabs .el-tabs__nav-wrap::after {
+    height: 1px;
+}
+
+/* 功能性图标颜色 (Data Types) */
+.icon-system {
+    color: var(--el-color-primary) !important;
+}
+
+.icon-json {
+    color: #EAB308 !important;
+    /* 琥珀色 */
+}
+
+.icon-otpauth {
+    color: #6366F1 !important;
+    /* 靛蓝色 */
+}
+
+.icon-steam {
+    color: #171a21 !important;
+    /* Steam Dark Blue/Black */
+}
+
+html.dark .icon-steam {
+    color: #66c0f4 !important;
+    /* Steam Light Blue */
+}
+
+.migration-steam-tip {
+    background-color: var(--el-color-info-light-9);
+    color: var(--el-text-color-regular);
+    padding: 12px 18px;
+    border-radius: var(--app-radius-card);
+}
+
+
+
+.migration-steam-tip p {
+    margin: 0 0 10px 0;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--el-text-color-regular);
+}
+
+
+html.dark .example-row code {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.icon-csv {
+    color: #10B981 !important;
+    /* 翠绿色 */
+}

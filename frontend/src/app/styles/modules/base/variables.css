@@ -1,0 +1,37 @@
+/* =========================================
+   0.1 全局语义化变量 (Design Tokens)
+   ========================================= */
+:root {
+    /* 玻璃拟态卡片 (登录/加载) */
+    --glass-card-bg: rgba(255, 255, 255, 0.95);
+    --glass-card-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+
+    /* GitHub 按钮 */
+    --github-btn-bg: #24292e;
+    --github-btn-border: #24292e;
+
+    /* 状态色块 */
+    --success-tip-bg: var(--el-color-success-light-9);
+    --vault-selected-bg: var(--el-color-primary-light-9);
+
+    /* 圆角标准 (Radius Tokens) */
+    --app-radius-card: 12px;
+    --app-radius-aux: 8px;
+
+    /* 高级感边框 Token (Premium Border Tokens) */
+    --app-border-subtle: rgba(0, 0, 0, 0.04);
+    --app-border-refined: rgba(0, 0, 0, 0.12);
+    --app-border-active: var(--el-color-primary);
+
+    /* 卡片背景 */
+    --app-card-bg: #ffffff !important;
+}
+
+/* 深色模式特定变量覆盖 */
+html.dark:root {
+    --app-border-subtle: rgba(255, 255, 255, 0.05);
+    --app-border-refined: rgba(255, 255, 255, 0.08);
+
+    /* 卡片背景 */
+    --app-card-bg: rgba(19, 19, 19, 1) !important;
+}

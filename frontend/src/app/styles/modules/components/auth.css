@@ -1,0 +1,341 @@
+/* Login.vue */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    background: transparent;
+    position: relative;
+    padding: 40px 0px;
+}
+
+.login-card {
+    margin: auto;
+    width: 92%;
+    max-width: 400px;
+    border-radius: var(--app-radius-card);
+    box-shadow: var(--glass-card-shadow);
+    background: var(--glass-card-bg);
+    backdrop-filter: blur(10px);
+    border: none;
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-top: 10px;
+}
+
+.logo-container-img {
+    width: 64px;
+    height: 64px;
+}
+
+.logo-container h2 {
+    margin: 16px 0 8px;
+    color: var(--el-text-color-primary);
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.subtitle {
+    margin: 0;
+    color: var(--el-text-color-secondary);
+    font-size: 14px;
+}
+
+.action-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.oauth-btn {
+    width: 100%;
+    height: 50px;
+    font-size: 16px;
+    border-radius: var(--app-radius-aux);
+    margin-left: 0 !important;
+    -webkit-tap-highlight-color: transparent;
+    /* 消除移动端点击深色遮罩 */
+    transition: all 0.2s ease;
+}
+
+/* 仅在 PC 端执行 Hover 特效 */
+@media (hover: hover) {
+    .oauth-btn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* 消除移动端点击变色问题：让 Element Plus 使用我们注入的 CSS 变量颜色 */
+.oauth-btn:focus,
+.oauth-btn:active {
+    outline: none;
+    box-shadow: none;
+}
+
+/* 强制登录加载图标为白色，防止被 Element Plus 默认蓝色覆盖 */
+.oauth-btn .is-loading {
+    color: #ffffff !important;
+}
+
+.passkey-btn {
+    margin-bottom: 5px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+    color: white !important;
+}
+
+.web3-btn {
+    margin-bottom: 5px;
+    background: linear-gradient(135deg, #0A5CFF 0%, #112F80 100%) !important;
+    border: none !important;
+    color: white !important;
+}
+
+.web3-qr-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.web3-qr-container canvas {
+    border-radius: 8px;
+    padding: 10px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.web3-qr-tip {
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--el-text-color-secondary);
+    text-align: center;
+}
+
+.login-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--el-text-color-secondary);
+    font-size: 12px;
+    margin: 10px 0;
+}
+
+.login-divider::before,
+.login-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px dashed var(--el-border-color-lighter);
+}
+
+.login-divider:not(:empty)::before {
+    margin-right: .5em;
+}
+
+.login-divider:not(:empty)::after {
+    margin-left: .5em;
+}
+
+.footer-tips {
+    margin-top: 10px;
+}
+
+/* OAuthCallback.vue */
+.callback-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    background: transparent;
+}
+
+.loading-card {
+    width: 92%;
+    max-width: 400px;
+    border-radius: var(--app-radius-card);
+    background: var(--glass-card-bg);
+    backdrop-filter: blur(10px);
+    border: none !important;
+}
+
+@media (max-width: 768px) {
+    .loading-card {
+        background: transparent !important;
+        backdrop-filter: none !important;
+        box-shadow: none !important;
+        width: 100%;
+    }
+
+    .loading-card .el-card__body {
+        padding: 0;
+    }
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-item .label {
+    font-size: 12px;
+    color: var(--el-text-color-secondary);
+    margin-bottom: 2px;
+}
+
+.info-item .detail {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+    font-family: var(--font-mono, monospace);
+    letter-spacing: 0.5px;
+}
+
+.web3-steps-container {
+    padding: 10px 5px;
+}
+
+.web3-content-area {
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.web3-qr-wrapper {
+    padding: 10px;
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.mobile-auth-status {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.status-msg {
+    font-size: 15px;
+    color: #409eff;
+    font-weight: 500;
+    animation: pulse 2s infinite;
+}
+
+.attention-msg {
+    color: #e6a23c;
+    font-weight: bold;
+}
+
+.mobile-action-group {
+    width: 100%;
+}
+
+/* Web3 Dynamic Button (Hybrid Mobile Flow) */
+.web3-dynamic-btn {
+    width: 100%;
+    text-decoration: none;
+    font-weight: bold;
+    height: 50px;
+    font-size: 16px;
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+}
+
+.web3-dynamic-btn.btn-connect {
+    background: var(--el-color-primary) !important;
+    border-color: var(--el-color-primary) !important;
+    color: white !important;
+}
+
+.web3-dynamic-btn.btn-sign {
+    background: #e6a23c !important;
+    border-color: #e6a23c !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(230, 162, 60, 0.3);
+}
+
+.web3-dynamic-btn.btn-verify {
+    background: var(--el-color-success) !important;
+    border-color: var(--el-color-success) !important;
+    color: white !important;
+}
+
+/* Ensure background persists during interactions and states */
+.web3-dynamic-btn.btn-connect:hover,
+.web3-dynamic-btn.btn-connect:active,
+.web3-dynamic-btn.btn-connect:focus,
+.web3-dynamic-btn.btn-sign:hover,
+.web3-dynamic-btn.btn-sign:active,
+.web3-dynamic-btn.btn-sign:focus,
+.web3-dynamic-btn.btn-verify:hover,
+.web3-dynamic-btn.btn-verify:active,
+.web3-dynamic-btn.btn-verify:focus {
+    color: white !important;
+    opacity: 0.9;
+    background-image: none !important;
+    /* Prevent element-plus default overlays */
+}
+
+.web3-dynamic-btn.btn-connect:active,
+.web3-dynamic-btn.btn-sign:active,
+.web3-dynamic-btn.btn-verify:active {
+    transform: scale(0.98);
+}
+
+.fallback-copy {
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+    width: 100%;
+}
+
+.tiny-label {
+    font-size: 12px;
+    color: #909399;
+    margin-bottom: 8px;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.7;
+        transform: scale(0.98);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0.7;
+        transform: scale(0.98);
+    }
+}
+
+.web3-qr-tip {
+    color: #909399;
+    font-size: 13px;
+    margin-top: 12px;
+    text-align: center;
+}
+
+/* 强制 Web3 相关加载图标为纯白色，解决某些主题下淡蓝色看不清的问题 */
+.web3-btn .is-loading,
+.web3-dynamic-btn .is-loading {
+    color: #ffffff !important;
+}
+
+.web3-modal-overlay {
+    background-color: rgba(0, 0, 0, 0.65) !important;
+    backdrop-filter: blur(5px) !important;
+}

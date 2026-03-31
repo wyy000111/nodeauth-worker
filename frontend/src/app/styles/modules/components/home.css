@@ -1,0 +1,153 @@
+/* 搜索栏吸顶过渡动画 */
+
+.affix-container {
+    background-color: var(--el-bg-color-page);
+}
+
+.affix-container.is-affixed {
+    padding-top: 20px;
+}
+
+.vault-list-toolbar {
+    transition: padding 0.3s ease, background-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+/* 共有吸顶属性 */
+.vault-list-toolbar.is-affixed {
+    z-index: 2000;
+    margin-bottom: 0 !important;
+}
+
+/* 移动端吸顶效果：全屏、背景、边框 */
+@media (max-width: 767px) {
+    .vault-list-toolbar.is-affixed {
+        width: 100vw !important;
+        margin-left: -20px !important;
+        padding: 14px 20px !important;
+        border-radius: 0 !important;
+    }
+}
+
+/* PC 端吸顶效果：保持原有宽度，无背景色 and 下边框 */
+@media (min-width: 768px) {
+    .vault-list-toolbar.is-affixed {
+        border-bottom: none !important;
+        padding: 20px 0px !important;
+    }
+}
+
+/* 消息提示磨砂风格 (全局样式注入建议) */
+:deep(.message-success-blur) {
+    background: rgba(103, 194, 58, 0.1) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(103, 194, 58, 0.2);
+    border-radius: 12px;
+}
+
+/* --- 分类 Tags (回归 Chips 样式) --- */
+.category-filter-container {
+    padding: 10px 0 20px 0;
+}
+
+@media (max-width: 768px) {
+    .category-filter-container {
+        padding: 0 0 20px 0;
+    }
+}
+
+.category-chips {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.category-chips::-webkit-scrollbar {
+    display: none;
+}
+
+.category-tag {
+    cursor: pointer;
+    background: var(--el-fill-color-light);
+    color: var(--el-text-color-regular);
+    padding: 3px 10px 4px 10px;
+    border-radius: 3px;
+    font-size: 13px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--el-fill-color-light);
+}
+
+.category-tag:hover {
+    background: var(--el-fill-color);
+}
+
+/* 分类 Chips 选中状态对齐 .vault-card.is-selected */
+.category-tag.is-active {
+    background-color: var(--vault-selected-bg) !important;
+    border: 1px solid #409EFF !important;
+    color: var(--el-color-primary) !important;
+}
+
+.category-tag.is-active .tag-count {
+    color: var(--el-color-primary) !important;
+    opacity: 0.9;
+}
+
+/* 适配深色模式下的透明度感 */
+html.dark .category-tag.is-active {
+    border: none !important;
+    background-color: rgba(64, 158, 255, 0.2) !important;
+}
+
+.tag-count {
+    margin-left: 5px;
+    font-size: 11px;
+}
+
+/* --- 分类标签加载动效 (对齐 asyncHelper.js 的朴素风格) --- */
+.category-tag {
+    position: relative;
+    /* 移除 overflow: hidden，由下方的 track 容器单独负责裁剪，确保文字显示完全 */
+}
+
+.tag-loading-track {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(var(--el-color-primary-rgb, 64, 158, 255), 0.1);
+    border-radius: 0 0 3px 3px;
+    overflow: hidden;
+    /* 在这里进行裁剪 */
+    z-index: 10;
+}
+
+.tag-loading-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 100%;
+    background: var(--el-color-primary);
+    border-radius: var(--app-radius-aux);
+    animation: plain-loading-flow 1.5s infinite ease-in-out;
+}
+
+@keyframes plain-loading-flow {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(250%);
+    }
+}
+
+.vault-list-wrapper {
+    transition: opacity 0.3s ease;
+}

@@ -1,0 +1,24 @@
+name = "nodeauth-worker-dev"
+main = "backend/src/app/worker.ts"
+compatibility_date = "2024-04-01"
+compatibility_flags = ["nodejs_compat"]
+
+[dev]
+ip = "0.0.0.0"
+port = 8787
+
+[assets]
+binding = "ASSETS"
+directory = "frontend/dist"
+not_found_handling = "single-page-application"
+
+[build]
+command = "npm run build --prefix ../frontend"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nodeauth-db-dev"
+database_id = "9e591736-5dbb-4f09-8769-0270d7257731"
+
+[triggers]
+crons = ["0 2 * * *"]
