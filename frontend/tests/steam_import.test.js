@@ -31,7 +31,7 @@ describe('Steam Token Import TDD Matrix', () => {
          */
         it('[H01] should parse a valid SDA .maFile JSON', async () => {
             const maFileContent = JSON.stringify({
-                "shared_secret": "dummY",
+                "shared_secret": "ZHVtbXk=",
                 "account_name": "test",
                 "SteamID": 12345678901234567
             })
@@ -59,7 +59,7 @@ describe('Steam Token Import TDD Matrix', () => {
 
             const vault = await dataMigrationService.parseImportData(content, type)
             expect(vault[0].algorithm).toBe('STEAM')
-            expect(vault[0].secret).toBe('dummy')
+            expect(vault[0].secret).toBe('DUMMY')
         })
 
         /**

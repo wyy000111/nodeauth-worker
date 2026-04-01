@@ -83,4 +83,10 @@ Promise.all([
   // init 完成后再安装路由，确保 beforeEach 能读到正确的 userInfo
   app.use(router)
   app.mount('#app')
+}).catch(err => {
+  console.error('[Main] Initialization failed:', err)
+  // 如果初始化彻底失败（可能是 IDB 锁死），依然尝试挂载，
+  // 这样至少可以展示渲染层，或是让路由等逻辑自行处理异常，避免在 splash 页面永久卡死
+  app.use(router)
+  app.mount('#app')
 })

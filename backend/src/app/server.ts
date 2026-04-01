@@ -118,9 +118,22 @@ const nodeAssetsFetch = async (request: Request): Promise<Response> => {
         return new Response('Forbidden', { status: 403 });
     }
 
-    // SPA fallback: if it's a directory or file doesn't exist, serve index.html
-    if (url.pathname === '/' || !fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
-        filePath = path.join(frontendDistPath, 'index.html');
+    // SPA fallback logic:
+    // 1. If it's the root path '/', serve index.html
+    // 2. If the file doesn't exist AND it's NOT a static asset request (no extension), serve index.html
+    // 3. If the client explicitly prefers HTML (navigation), serve index.html
+    const isStaticAsset = /\.[a-z0-9]+$/i.test(url.pathname);
+    const prefersHtml = request.headers.get('Accept')?.includes('text/html');
+    let isFallback = false;
+
+    if (url.pathname === '/' || fs.existsSync(filePath) === false || fs.statSync(filePath).isDirectory()) {
+        if (!isStaticAsset || prefersHtml) {
+            const fallbackPath = path.join(frontendDistPath, 'index.html');
+            if (fs.existsSync(fallbackPath)) {
+                filePath = fallbackPath;
+                isFallback = true;
+            }
+        }
     }
 
     if (!fs.existsSync(filePath)) {
@@ -141,13 +154,16 @@ const nodeAssetsFetch = async (request: Request): Promise<Response> => {
         '.svg': 'image/svg+xml',
         '.ico': 'image/x-icon',
         '.webmanifest': 'application/manifest+json',
-        '.wasm': 'application/wasm'
+        '.wasm': 'application/wasm',
+        '.json': 'application/json',
+        '.mjs': 'application/javascript'
     };
 
     return new Response(content, {
         headers: {
             'Content-Type': mimeTypes[ext] || 'application/octet-stream',
-            'Cache-Control': 'public, max-age=3600'
+            'Cache-Control': 'public, max-age=3600',
+            ...(isFallback ? { 'X-NodeAuth-SPA-Fallback': 'true' } : {})
         }
     });
 };
