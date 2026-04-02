@@ -25,6 +25,10 @@
       "node-cron"
     ],
     "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
+    "jsxImportSource": "hono/jsx",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./node_modules"
+    ]
   },
 }

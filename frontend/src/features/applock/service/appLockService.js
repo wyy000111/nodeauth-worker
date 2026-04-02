@@ -4,35 +4,53 @@
  * Using Web Crypto API (SubtleCrypto)
  */
 
-import { startAuthentication, startRegistration, browserSupportsWebAuthn } from '@simplewebauthn/browser'
+import {
+    startAuthentication,
+    startRegistration,
+    browserSupportsWebAuthn,
+    WebAuthnAbortService
+} from '@simplewebauthn/browser'
 
 const PIN_PBKDF2_ITERATIONS = 100000
 const SALT_LENGTH = 16
 const IV_LENGTH = 12
+const RP_ID = window.location.hostname
 
 export const appLockService = {
+    /**
+     * 🛡️ 检查浏览器/硬件是否支持 PRF 扩展
+     */
     isBiometricSupported() {
         if (!browserSupportsWebAuthn()) return false
-        // 🛡️ 方案 A 探针：检查 PRF 扩展
         const caps = window.PublicKeyCredential?.getClientExtensionCapabilities?.() || {}
         return !!caps.prf
     },
 
     /**
-     * 🕵️ 方案 B 探针：检查是否至少支持基础 WebAuthn 平台认证器
+     * 🕵️ 检查是否支持基础平台认证器
      */
     isLegacyBiometricSupported() {
         return browserSupportsWebAuthn()
     },
 
     /**
+     * 【架构改进】安全取消当前正在进行的 WebAuthn 仪式
+     */
+    cancelCurrentCeremony() {
+        try {
+            WebAuthnAbortService.cancelCeremony()
+        } catch (e) {
+            // 忽略正常的中止异常
+        }
+    },
+
+    /**
      * 🆕 步骤1-B：降级注册生物识别 (Scenario B)
      */
     async enrollBiometricCompatible(userData = {}) {
-        const rpId = window.location.hostname === 'localhost' ? 'localhost' : window.location.hostname
         const options = {
             challenge: 'AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE',
-            rp: { name: 'NodeAuth', id: rpId },
+            rp: { name: 'NodeAuth', id: RP_ID },
             user: {
                 id: 'nodeauth-compat',
                 name: userData.email || userData.username || 'nodeauth',
@@ -48,41 +66,48 @@ export const appLockService = {
             const attestation = await startRegistration(options)
             return attestation.id
         } catch (e) {
-            console.error('[SecurityService] Compact enrollment failed:', e)
-            return null
+            console.error('[AppLockService] Compat enrollment failed:', e)
+            throw e
         }
     },
 
     /**
      * 🆕 步骤2-B：降级验证生物识别 (Scenario B)
+     * @param {string} credId 凭证ID
+     * @param {boolean} forceReset 是否强制重置旧会话
      */
-    async verifyBiometricCompatible(credId) {
-        if (!credId) return false
+    async verifyBiometricCompatible(credId, forceReset = false) {
+        if (!credId) throw new Error('MISSING_CRED_ID')
+
+        if (forceReset) {
+            this.cancelCurrentCeremony()
+        }
+
         const options = {
             challenge: 'AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE',
             allowCredentials: [{ id: credId, type: 'public-key' }],
-            userVerification: 'required'
+            userVerification: 'required',
+            rpId: RP_ID
         }
+
         try {
             const assertion = await startAuthentication(options)
             return !!assertion
         } catch (e) {
-            console.error('[SecurityService] Compact auth failed:', e)
-            return false
+            if (e?.name !== 'AbortError') {
+                console.error('[AppLockService] Compat auth failed:', e.name)
+            }
+            throw e
         }
     },
 
-
-
     /**
-     * 🆕 步骤1：注册生物识别凭证 (Enrollment)
-     * 必须先在硬件中注册一个带有 PRF 能力的本设备凭证
+     * 🆕 步骤1：注册生物识别凭证 (Enrollment - Scenario A)
      */
     async enrollBiometric(userData = {}) {
-        const rpId = window.location.hostname === 'localhost' ? 'localhost' : window.location.hostname
         const options = {
             challenge: 'AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE',
-            rp: { name: 'NodeAuth', id: rpId },
+            rp: { name: 'NodeAuth', id: RP_ID },
             user: {
                 id: 'nodeauth-lock',
                 name: userData.email || userData.username || 'nodeauth',
@@ -95,44 +120,43 @@ export const appLockService = {
                 requireResidentKey: true
             },
             extensions: {
-                // 🛡️ macOS 15+ / Chrome / Yubikey 标准启用语法
                 prf: { enabled: true }
             }
-
         }
 
         try {
             const attestation = await startRegistration(options)
-
-            // 🛡️ 核心：验证硬件是否真正透传并激活了 PRF
             if (!attestation.clientExtensionResults?.prf) {
-                // 如果 Passkey 成功了但 PRF 没成功，说明是硬件不支持 HMAC Secret 派生
                 throw new Error('E_PRF_NOT_SUPPORTED')
             }
-
-            // 🔄 注册成功后，立即尝试第一次定向派生
             const firstKey = await this.getBiometricKey(attestation.id)
             if (!firstKey) throw new Error('E_DERIVATION_FAILED')
-
             return { key: firstKey, credId: attestation.id }
         } catch (e) {
-            console.error('[SecurityService] Enrollment trap:', e)
+            console.error('[AppLockService] Enrollment failed:', e)
             throw e
         }
     },
 
 
     /**
-     * 🆕 步骤2：获取生物识别密钥 (Authentication)
+     * 🆕 步骤2：获取生物识别密钥 (Authentication - Scenario A)
+     * @param {string} credId 凭证ID
+     * @param {boolean} forceReset 是否强制重置旧会话
      */
-    async getBiometricKey(credId) {
+    async getBiometricKey(credId, forceReset = false) {
+        if (forceReset) {
+            this.cancelCurrentCeremony()
+        }
+
         const dummyB64 = 'AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE'
         const options = {
             challenge: dummyB64,
             allowCredentials: credId ? [{ id: credId, type: 'public-key' }] : [],
             userVerification: 'required',
+            rpId: RP_ID,
             extensions: {
-                prf: { eval: { first: dummyB64 } } // 使用 B64URL 格式避免 replace 报错
+                prf: { eval: { first: dummyB64 } }
             }
         }
 
@@ -144,18 +168,18 @@ export const appLockService = {
             }
             throw new Error('PRF key not returned by hardware')
         } catch (e) {
-            console.error('[SecurityService] Auth failed:', e)
-            return null
+            if (e?.name !== 'AbortError') {
+                console.error('[AppLockService] Auth failed:', e.name)
+            }
+            throw e
         }
     },
 
     /**
      * 1. 密钥派生 (PIN -> Key)
-     * 将 6 位 PIN 转换为对称加密密钥
      */
     async deriveKeyFromPin(pin, salt) {
         if (pin.length !== 6) throw new Error('PIN must be 6 digits')
-
         const enc = new TextEncoder()
         const passwordKey = await crypto.subtle.importKey(
             'raw',
@@ -164,7 +188,6 @@ export const appLockService = {
             false,
             ['deriveKey']
         )
-
         return await crypto.subtle.deriveKey(
             {
                 name: 'PBKDF2',
@@ -174,14 +197,13 @@ export const appLockService = {
             },
             passwordKey,
             { name: 'AES-GCM', length: 256 },
-            false, // 不可导出，增强安全
+            false,
             ['encrypt', 'decrypt']
         )
     },
 
     /**
      * 2. 加密逻辑 (Encryption)
-     * 使用派生密钥加密原 device_salt
      */
     async encryptDeviceSalt(rawSalt, masterKey) {
         const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH))
@@ -194,13 +216,12 @@ export const appLockService = {
         return {
             encrypted: new Uint8Array(encrypted),
             iv,
-            salt: null // 外部传入盐值不在此持久化
+            salt: null
         }
     },
 
     /**
      * 3. 解密逻辑 (Decryption)
-     * 使用 PIN 验证并尝试还原 device_salt
      */
     async decryptDeviceSalt(encryptedData, iv, masterKey) {
         try {
@@ -212,7 +233,7 @@ export const appLockService = {
             const dec = new TextDecoder()
             return dec.decode(decrypted)
         } catch (e) {
-            return null // 解密失败 (PIN 错误)
+            return null
         }
     },
 

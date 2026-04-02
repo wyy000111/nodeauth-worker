@@ -128,12 +128,29 @@
     .header {
         height: 60px;
         padding: 0 20px;
+        position: sticky; /* 确保作为定位基准 */
+    }
+
+    .header-center {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none; /* 防止遮挡两侧按钮点击 */
+        z-index: 1;
+        padding-top: env(safe-area-inset-top); /* 应对 iOS 安全区 */
     }
 
     .header-page-title {
         font-size: 16px !important;
         font-weight: 600 !important;
         line-height: 1;
+        pointer-events: auto; /* 允许标题自身的交互 */
+        white-space: nowrap;
     }
 }
 

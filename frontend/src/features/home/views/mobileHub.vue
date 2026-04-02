@@ -19,7 +19,7 @@
         :class="{ 'is-logo': !authUserStore.userInfo?.avatar }"
         @error="(e) => true"
       >
-        <img src="/logo.svg?20260332" alt="NodeAuth" />
+        <img src="/logo.svg?20260402" alt="NodeAuth" />
       </el-avatar>
       <div class="profile-info">
         <div class="profile-name-row">

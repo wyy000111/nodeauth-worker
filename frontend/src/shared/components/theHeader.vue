@@ -17,7 +17,7 @@
         v-if="!layoutStore.isMobile || !layoutStore.canGoBack"
       >
         <div class="header-logo" @click="layoutStore.resetHomeTab">
-          <img src="/logo.svg?20260332" alt="NodeAuth" class="header-logo-img" />
+          <img src="/logo.svg?20260402" alt="NodeAuth" class="header-logo-img" />
           <h2 class="header-logo-text">NodeAuth</h2>
           
           <!-- 核心状态 Tag 注入 -->

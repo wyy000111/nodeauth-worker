@@ -7,34 +7,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="format-detection" content="telephone=no, email=no, address=no" />
   <title>NodeAuth - A Secure 2FA Management Tool.</title>
+
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('app_theme_mode')
+      const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+
+      let isDark = false
+      if (savedTheme) {
+        isDark = (savedTheme === 'dark')
+      } else {
+        isDark = systemDark
+      }
+
+      if (isDark) {
+        document.documentElement.classList.add('dark')
+        document.documentElement.style.backgroundColor = '#121212'
+      } else {
+        document.documentElement.classList.remove('dark')
+        document.documentElement.style.backgroundColor = '#f5f7fa'
+      }
+    })()
+  </script>
+
   <style>
+    :root {
+      --bg-color: #f5f7fa;
+      --logo-shadow-color: rgba(63, 159, 255, 0.3);
+    }
+
+    html.dark {
+      --bg-color: #121212;
+      --logo-shadow-color: rgba(0, 0, 0, 0.5);
+    }
+
     body {
       margin: 0;
       padding: 0;
-      background-color: #f5f7fa;
+      background-color: var(--bg-color);
+      overflow: hidden;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
     }
 
     .splash-logo-container {
-      /* 使用 fixed 居中，防止干扰 #app 挂载后的正常布局 */
       position: fixed;
       top: 0;
+      bottom: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
+      right: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      background-color: #f5f7fa;
+      background-color: var(--bg-color);
       z-index: 9999;
       animation: pulse 2s ease-in-out infinite;
+      padding-bottom: 8dvh;
+      box-sizing: border-box;
     }
 
     .splash-logo {
-      color: #3F9FFF;
-      width: 64px;
-      height: 64px;
-      filter: drop-shadow(0 0 10px rgba(63, 159, 255, 0.3));
+      width: 72px;
+      height: 72px;
+      filter: drop-shadow(0 0 12px var(--logo-shadow-color));
+      user-select: none;
+      -webkit-user-drag: none;
     }
 
     @keyframes pulse {
@@ -42,11 +80,11 @@
       0%,
       100% {
         transform: scale(1);
-        opacity: 0.7;
+        opacity: 0.6;
       }
 
       50% {
-        transform: scale(1.1);
+        transform: scale(1.08);
         opacity: 1;
       }
     }
@@ -56,7 +94,7 @@
 <body>
   <div id="app">
     <div class="splash-logo-container">
-      <img src="/logo.svg?20260332" alt="NodeAuth" class="splash-logo" />
+      <img src="/logo.svg?20260402" alt="NodeAuth" class="splash-logo" />
     </div>
   </div>
   <script type="module" src="/src/main.js"></script>

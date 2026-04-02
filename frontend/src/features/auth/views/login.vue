@@ -2,7 +2,7 @@
   <div class="login-container">
     <el-card class="login-card" shadow="hover">
       <div class="logo-container">
-        <img src="/logo.svg?20260332" alt="NodeAuth" class="logo-container-img" />
+        <img src="/logo.svg?20260402" alt="NodeAuth" class="logo-container-img" />
         <h2>NodeAuth</h2>
         <p class="subtitle">{{ $t('auth.subtitle') }}</p>
       </div>

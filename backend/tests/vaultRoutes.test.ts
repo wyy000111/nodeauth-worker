@@ -33,7 +33,7 @@ describe('Vault API Routes - Authentication & Responses [Green]', () => {
         vi.mocked(SessionService.prototype.validateSession).mockResolvedValue(true);
 
         const originalRequest = app.request.bind(app);
-        app.request = (path: string | Request, options?: RequestInit | undefined) => {
+        app.request = (path: any, options?: any) => {
             return originalRequest(path, options, env as any);
         };
     });

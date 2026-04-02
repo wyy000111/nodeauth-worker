@@ -119,14 +119,33 @@ const nodeAssetsFetch = async (request: Request): Promise<Response> => {
     }
 
     // SPA fallback logic:
-    // 1. If it's the root path '/', serve index.html
-    // 2. If the file doesn't exist AND it's NOT a static asset request (no extension), serve index.html
+    // 1. If it's the root path '/', serve index.html (Not a fallback)
+    // 2. If the file doesn't exist AND it's NOT a static asset request (no extension), serve index.html (This is a fallback)
     // 3. If the client explicitly prefers HTML (navigation), serve index.html
-    const isStaticAsset = /\.[a-z0-9]+$/i.test(url.pathname);
+    const isAssetPath = url.pathname.startsWith('/assets/');
+    const isStaticAsset = isAssetPath || /\.(js|css|png|jpg|jpeg|gif|svg|ico|webmanifest|wasm|json|mjs|woff2|woff|ttf|map)$/i.test(url.pathname);
     const prefersHtml = request.headers.get('Accept')?.includes('text/html');
     let isFallback = false;
+    let isIndexHtml = false;
 
-    if (url.pathname === '/' || fs.existsSync(filePath) === false || fs.statSync(filePath).isDirectory()) {
+    // 1. Root and direct index.html
+    if (url.pathname === '/' || url.pathname === '/index.html') {
+        const indexFile = path.join(frontendDistPath, 'index.html');
+        if (fs.existsSync(indexFile)) {
+            filePath = indexFile;
+            isIndexHtml = true;
+        }
+    }
+    // 2. SPA Route Fallback - NEVER fallback for assets, even if missing
+    else if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+        // If it's an asset path, return 404 directly without falling back to index.html
+        if (isAssetPath) {
+            if (logLevel !== 'error' && logLevel !== 'warn') {
+                console.log(`[Static] Asset Missing (No Fallback): ${url.pathname}`);
+            }
+            return new Response('Asset Not Found', { status: 404 });
+        }
+
         if (!isStaticAsset || prefersHtml) {
             const fallbackPath = path.join(frontendDistPath, 'index.html');
             if (fs.existsSync(fallbackPath)) {
@@ -136,13 +155,15 @@ const nodeAssetsFetch = async (request: Request): Promise<Response> => {
         }
     }
 
-    if (!fs.existsSync(filePath)) {
+    // 3. Final existance check (Strict for static assets)
+    if (!fs.existsSync(filePath) || (fs.statSync(filePath).isDirectory() && !isIndexHtml && !isFallback)) {
+        if (logLevel !== 'error' && logLevel !== 'warn') {
+            console.log(`[Static] 404 Not Found: ${url.pathname}`);
+        }
         return new Response('Not Found', { status: 404 });
     }
 
     const content = fs.readFileSync(filePath);
-
-    // Mime types
     const ext = path.extname(filePath).toLowerCase();
     const mimeTypes: { [key: string]: string } = {
         '.html': 'text/html',
@@ -156,16 +177,41 @@ const nodeAssetsFetch = async (request: Request): Promise<Response> => {
         '.webmanifest': 'application/manifest+json',
         '.wasm': 'application/wasm',
         '.json': 'application/json',
-        '.mjs': 'application/javascript'
+        '.mjs': 'application/javascript',
+        '.woff2': 'font/woff2',
+        '.woff': 'font/woff',
+        '.ttf': 'font/ttf'
     };
 
-    return new Response(content, {
-        headers: {
-            'Content-Type': mimeTypes[ext] || 'application/octet-stream',
-            'Cache-Control': 'public, max-age=3600',
-            ...(isFallback ? { 'X-NodeAuth-SPA-Fallback': 'true' } : {})
-        }
-    });
+    // 4. Fine-grained Cache Control
+    let cacheControl = 'public, max-age=3600';
+    if (url.pathname.includes('/assets/')) {
+        // Hashed assets - 1 year
+        cacheControl = 'public, max-age=31536000, immutable';
+    } else if (url.pathname === '/sw.js' || url.pathname === '/manifest.webmanifest' || url.pathname.includes('manifest.json')) {
+        // Critical PWA metadata - Never cache at edge/browser
+        cacheControl = 'no-store, no-cache, must-revalidate, proxy-revalidate';
+    } else if (isIndexHtml || isFallback) {
+        // Entry point - Check with server every time
+        cacheControl = 'no-cache';
+    }
+
+    if (logLevel !== 'error' && logLevel !== 'warn') {
+        const type = isFallback ? '[Fallback]' : (isIndexHtml ? '[Index]' : '[File]');
+        console.log(`[Static] ${type} ${url.pathname} -> ${path.basename(filePath)} (${mimeTypes[ext] || 'bin'})`);
+    }
+
+    const headers: Record<string, string> = {
+        'Content-Type': mimeTypes[ext] || 'application/octet-stream',
+        'Cache-Control': cacheControl,
+    };
+
+    // Only add the fallback header if it's truly a secondary route fallback
+    if (isFallback) {
+        headers['X-NodeAuth-SPA-Fallback'] = 'true';
+    }
+
+    return new Response(content, { headers });
 };
 
 // 8. Cron Triggers
