@@ -23,7 +23,9 @@ try {
 const pkgPath = path.resolve(__dirname, '../package.json')
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'))
 const appVersion = pkg.version || '0.0.0'
-const appPlatform = process.env.DOCKER_BUILD === 'true' ? 'Docker' : 'Cloudflare Workers'
+const isDocker = process.env.DOCKER_BUILD === 'true'
+const appPlatform = isDocker ? 'Docker' : 'Cloudflare Workers'
+const iconSuffix = isDocker ? 'docker' : 'cloudflare'
 
 export default defineConfig({
   plugins: [
@@ -43,7 +45,7 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'logo.svg', 'pwa-192x192.png', 'pwa-512x512.png'],
+      includeAssets: ['favicon.svg', 'logo.svg', `pwa-${iconSuffix}-192x192.png`, `pwa-${iconSuffix}-512x512.png`],
       manifest: {
         id: '/',
         name: 'NodeAuth',
@@ -58,19 +60,19 @@ export default defineConfig({
         categories: ['utilities', 'security'],
         icons: [
           {
-            src: 'pwa-192x192.png?20260331',
+            src: `pwa-${iconSuffix}-192x192.png?20260401`,
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: 'pwa-512x512.png?20260331',
+            src: `pwa-${iconSuffix}-512x512.png?20260401`,
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: 'pwa-512x512.png?20260331',
+            src: `pwa-${iconSuffix}-512x512.png?20260401`,
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
