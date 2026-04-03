@@ -215,6 +215,7 @@ const handleEmergencyReset = () => {
   margin: 0 auto; height: 64px; width: 64px; border-radius: 50%; border: none;
   background: var(--el-fill-color-light); font-size: 24px; cursor: pointer;
   transition: all 0.1s; display: flex; align-items: center; justify-content: center;
+  touch-action:none;
 }
 .keypad button:active { background: var(--el-fill-color-darker); transform: scale(0.95); }
 .btn-extra { 

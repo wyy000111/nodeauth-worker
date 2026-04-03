@@ -171,7 +171,11 @@ auth.get('/me', authMiddleware, async (c) => {
 auth.get('/webauthn/register/options', authMiddleware, async (c) => {
     const user = c.get('user');
     const service = getWebAuthnService(c);
-    const options = await service.generateRegistrationOptions(user.id, user.email);
+
+    // 🛡️ 架构师修复: 使用 user.email || user.id 作为 identity，确保非邮箱登录 (如 Telegram) 也能注册。
+    const identity = user.email || user.id;
+    const displayName = user.username || identity;
+    const options = await service.generateRegistrationOptions(user.id, identity, displayName);
 
     // 存储 challenge 到 Cookie
     setCookie(c, 'webauthn_registration_challenge', options.challenge, {
@@ -191,7 +195,10 @@ auth.post('/webauthn/register/verify', authMiddleware, async (c) => {
 
     const service = getWebAuthnService(c);
     const { name } = body; // 前端传回的自定义别名
-    const result = await service.verifyRegistrationResponse(user.email, body.response, expectedChallenge, name);
+
+    // 🛡️ 架构师修复: 存储 identity (Email or ID) 以便后续精准识别
+    const identity = user.email || user.id;
+    const result = await service.verifyRegistrationResponse(identity, body.response, expectedChallenge, name);
 
     deleteCookie(c, 'webauthn_registration_challenge', { path: '/' });
     return c.json(result);

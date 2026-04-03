@@ -24,9 +24,9 @@
 
 ## 📖 Preview
 
-<img height="222" src="https://github.com/user-attachments/assets/0ea96d92-c65b-4414-88dd-fad8a1c43021" />
+<img height="222" src="https://github.com/user-attachments/assets/20ca3791-841b-4a89-bfe4-ffacfcc7ee9a" />
 
-<img height="222" src="https://github.com/user-attachments/assets/2ceace4f-cde8-4b74-9582-97700d2c8b3d" />
+<img height="222" src="https://github.com/user-attachments/assets/632f5711-d6af-4c34-812a-1728d701ce27" />
 
 ---
 

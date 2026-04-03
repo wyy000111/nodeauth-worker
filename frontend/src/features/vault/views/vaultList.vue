@@ -127,7 +127,6 @@
       >
         <DynamicScroller
           class="vault-scroller"
-          page-mode
           :items="gridRows"
           :min-item-size="80"
           key-field="id"
@@ -669,6 +668,19 @@ onMounted(handleUnlocked)
 </script>
 
 <style scoped>
+.vault-scroller {
+  /* 关键修复：禁用 page-mode 后，让 scroller 撑开并自适应父级容器高度 */
+  height: 100%;
+  width: 100%;
+}
+
+/* 维持用户隐藏滚动条的逻辑 */
+.vault-scroller::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 :deep(.el-radio-button__inner) {
   display: flex;
   align-items: center;

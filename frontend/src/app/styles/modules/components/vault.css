@@ -25,7 +25,6 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
@@ -502,7 +501,8 @@
 .swipe-action-content {
     position: relative;
     z-index: 2;
-    background: inherit;
+    background: var(--el-bg-color);
+    /* 确保实心背景，防止侧滑按钮穿透可见 */
     width: 100%;
     display: flex;
     flex-direction: column;

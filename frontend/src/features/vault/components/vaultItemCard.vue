@@ -176,7 +176,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { MoreFilled, Edit, Delete, Picture, Loading, Upload, WarningFilled, Share } from '@element-plus/icons-vue'
 import VaultIcon from '@/features/vault/components/vaultIcon.vue'
-import SwipeAction from '@/shared/components/swipeAction.vue'
+import SwipeAction from './swipeAction.vue'
 import { generateTOTP } from '@/shared/utils/totp'
 import { useLayoutStore } from '@/features/home/store/layoutStore'
 import { useTotpTimer } from '@/features/vault/composables/useTotpTimer'
@@ -212,8 +212,8 @@ const handleRevealEnd = (e) => {
     const deltaX = Math.abs(touch.clientX - startX)
     const deltaY = Math.abs(touch.clientY - startY)
 
-    // 如果手指由于上下滑动(下滑加载)或左右摆动导致位移超过 10px，则判定为手势操作，不揭层
-    if (deltaX > 10 || deltaY > 10) return
+    // 如果手指由于上下滑动(下滑加载)或左右摆动导致位移超过 15px，则判定为手势操作，不揭层
+    if (deltaX > 15 || deltaY > 15) return
   }
 
   // 桌面端：如果是鼠标操作，通常不考虑长位移误触，但可以增加简单的判定

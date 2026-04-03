@@ -38,8 +38,8 @@ export class WebAuthnService {
     /**
      * 生成注册选项
      */
-    async generateRegistrationOptions(userId: string, userEmail: string) {
-        // 获取已存在的凭证
+    async generateRegistrationOptions(userId: string, userEmail: string, userNameExt?: string) {
+        // 获取已存在的凭证 (以 identity 作为 userId 关联)
         const results = await this.env.DB.select({ credential_id: schema.authPasskeys.credentialId })
             .from(schema.authPasskeys)
             .where(eq(schema.authPasskeys.userId, userEmail));
@@ -48,8 +48,8 @@ export class WebAuthnService {
             rpName: this.rpName,
             rpID: this.rpID,
             userID: new TextEncoder().encode(userId),
-            userName: userEmail,
-            userDisplayName: `NodeAuth Login (${userEmail})`,
+            userName: userNameExt || userEmail,
+            userDisplayName: `NodeAuth (${userNameExt || userEmail})`,
             attestationType: 'none',
             excludeCredentials: results.map((row: any) => ({
                 id: row.credential_id,
@@ -144,8 +144,8 @@ export class WebAuthnService {
                 })
                 .where(eq(schema.authPasskeys.credentialId, credentialID));
 
-            // 验证白名单 (这里我们需要模拟一个 OAuthUserInfo 结构)
-            const userEmail = credential.userId; // 在这里 user_id 存储的是 Email
+            // 验证通过，颁发令牌
+            const userEmail = credential.userId; // 存储的是 Email 或 ID (Telegram)
 
             // 注册会话设备
             const sessionId = await this.sessionService.createSession(userEmail, userAgent, clientIp, deviceId, 'passkey');
@@ -153,13 +153,13 @@ export class WebAuthnService {
             // 签发 Token
             const token = await this.generateSystemToken({
                 id: userEmail,
-                username: userEmail.split('@')[0],
-                email: userEmail,
+                username: userEmail.includes('@') ? userEmail.split('@')[0] : userEmail,
+                email: userEmail.includes('@') ? userEmail : undefined,
                 provider: 'passkey'
             }, sessionId);
 
             // 附带客户端解密因子 (Device Key)
-            // 核心: 必须使用 Email 与 OAuth 逻辑保持对齐，确保解密一致性。
+            // 核心: 必须使用 Email/ID 与 OAuth 逻辑保持对齐，确保解密一致性。
             const deviceKey = await generateDeviceKey(userEmail, this.env.JWT_SECRET || '');
 
             // 检查是否需要初始化设置
@@ -172,8 +172,8 @@ export class WebAuthnService {
                 deviceKey,
                 userInfo: {
                     id: userEmail,
-                    username: userEmail.split('@')[0],
-                    email: userEmail,
+                    username: userEmail.includes('@') ? userEmail.split('@')[0] : userEmail,
+                    email: userEmail.includes('@') ? userEmail : undefined,
                     provider: 'passkey'
                 },
                 needsEmergency,

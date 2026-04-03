@@ -5,11 +5,19 @@
     ref="containerRef"
   >
     <!-- Background Actions Layer (Behind Content) -->
-    <div class="swipe-actions left-actions" ref="leftActionsRef">
+    <div 
+      class="swipe-actions left-actions" 
+      ref="leftActionsRef"
+      :style="{ opacity: translateX > 0 ? 1 : 0, visibility: translateX > 0 ? 'visible' : 'hidden' }"
+    >
       <slot name="left-actions" />
     </div>
     
-    <div class="swipe-actions right-actions" ref="rightActionsRef">
+    <div 
+      class="swipe-actions right-actions" 
+      ref="rightActionsRef"
+      :style="{ opacity: translateX < 0 ? 1 : 0, visibility: translateX < 0 ? 'visible' : 'hidden' }"
+    >
       <slot name="right-actions" />
     </div>
 
@@ -80,9 +88,9 @@ const handleTouchMove = (e) => {
   const deltaX = touch.clientX - startX
   const deltaY = touch.clientY - startY
 
-  // Locking mechanism: Decide axis in the first 10px
+  // Locking mechanism: Decide axis in the first 15px (Recommended for modern devices)
   if (isHorizontal === null) {
-     if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) {
+     if (Math.abs(deltaX) > 15 || Math.abs(deltaY) > 15) {
         isHorizontal = Math.abs(deltaX) > Math.abs(deltaY)
      }
   }
