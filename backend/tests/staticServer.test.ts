@@ -12,6 +12,11 @@ describe('StaticServer Utility (Atomic FS Robustness)', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        // Default mocks for atomic operations
+        // @ts-ignore
+        vi.mocked(fs.openSync).mockReturnValue(101);
+        // @ts-ignore
+        vi.mocked(fs.closeSync).mockImplementation(() => { });
     });
 
     it('should return 200 for valid index.html request', async () => {
@@ -20,6 +25,7 @@ describe('StaticServer Utility (Atomic FS Robustness)', () => {
 
         // Mocking root check and final check
         vi.mocked(fs.statSync).mockReturnValue(mockStats);
+        vi.mocked(fs.fstatSync).mockReturnValue(mockStats);
         vi.mocked(fs.readFileSync).mockReturnValue(Buffer.from('<html></html>'));
 
         const res = await nodeAssetsFetch(req, mockOptions);
@@ -68,6 +74,7 @@ describe('StaticServer Utility (Atomic FS Robustness)', () => {
             if (p.toString().endsWith('index.html')) return indexStats;
             throw new Error('ENOENT: /dashboard not found');
         });
+        vi.mocked(fs.fstatSync).mockReturnValue(indexStats);
         vi.mocked(fs.readFileSync).mockReturnValue(Buffer.from('<html>SPA</html>'));
 
         const res = await nodeAssetsFetch(req, mockOptions);
@@ -82,6 +89,7 @@ describe('StaticServer Utility (Atomic FS Robustness)', () => {
         const mockStats = { isFile: () => true, isDirectory: () => false } as fs.Stats;
 
         vi.mocked(fs.statSync).mockReturnValue(mockStats);
+        vi.mocked(fs.fstatSync).mockReturnValue(mockStats);
         // Simulate file disappearance during read
         vi.mocked(fs.readFileSync).mockImplementation(() => {
             throw new Error('ENOENT: file gone');
@@ -89,9 +97,9 @@ describe('StaticServer Utility (Atomic FS Robustness)', () => {
 
         const res = await nodeAssetsFetch(req, mockOptions);
 
-        expect(res.status).toBe(500);
+        expect(res.status).toBe(404);
         const text = await res.text();
-        expect(text).toBe('Access Failed');
+        expect(text).toBe('Not Found');
     });
 
     it('should return 404 WITHOUT fallback for API paths', async () => {

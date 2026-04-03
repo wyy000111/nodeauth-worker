@@ -1,8 +1,9 @@
 <template>
-  <el-card 
-    class="vault-card" 
-    :class="{ 
-      'is-selected': isSelected, 
+  <el-card
+    shadow="hover"
+    class="vault-card"
+    :class="{
+      'is-selected': isSelected,
       'is-dragging': isDragging,
       'is-pressing': isPressing,
       'is-compact': isCompact,
@@ -10,107 +11,172 @@
       'is-ghost-mode': layoutStore.appGhostMode,
       'is-revealed': isRevealed
     }"
-    shadow="hover"
   >
-    <div class="card-header">
-      <div class="service-info">
-        <el-checkbox :model-value="isSelected" @change="$emit('toggle-selection', item.id)" @click.stop />
-        <VaultIcon :service="item.service" :size="isCompact ? 20: 24" />
-        <h3 class="service-name" :title="item.service">{{ item.service }}</h3>
-        <el-tag size="small" v-if="item.category" effect="light">{{ item.category }}</el-tag>
-        <!-- 离线标记 -->
-        <el-tooltip v-if="isPending && item.status !== 'conflict'" :content="$t('vault.pending_sync_tip')">
-          <el-icon class="pending-icon ml-5"><Upload /></el-icon>
-        </el-tooltip>
-        <!-- 冲突标记 -->
-        <el-tooltip v-if="item.status === 'conflict'" :content="$t('vault.conflict_detected_tip')">
-          <el-icon class="conflict-icon ml-5" color="#F56C6C"><WarningFilled /></el-icon>
-        </el-tooltip>
-      </div>
-      
-      <el-dropdown trigger="click" @command="(cmd) => $emit('command', cmd, item)">
-        <el-icon class="more-icon" @click.stop><MoreFilled /></el-icon>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item command="qr">
-              <el-icon><Picture /></el-icon> {{ $t('vault.export_account') }}
-            </el-dropdown-item>
-            <el-dropdown-item command="edit">
-              <el-icon><Edit /></el-icon> {{ $t('common.edit') }}
-            </el-dropdown-item>
-            <el-dropdown-item command="delete" class="text-danger">
-              <el-icon><Delete /></el-icon> {{ $t('common.delete') }}
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </div>
-
-    <p class="vault-name">{{ displayAccount }}</p>
-
-    <div class="code-display-area" 
-         @click.stop="$emit('copy-code', item, currentCode)"
-         @mousedown="handleRevealStart" 
-         @mouseup="handleRevealEnd" 
-         @mouseleave="handleRevealEnd" 
-         @touchstart="handleRevealStart" 
-         @touchend="handleRevealEnd" 
-         @touchcancel="handleRevealEnd"
+    <SwipeAction
+      :id="item.id"
+      :disabled="!layoutStore.isMobile || item.status === 'conflict' || isDragging || isPressing"
+      @open="() => (isRevealed = false)"
     >
-      <div class="code-left">
-        <div class="current-code" :data-digits="digits">
-          <template v-if="currentCode && currentCode !== '------'">
-            <span>{{ codeGroups[0] }}</span>
-            <span class="code-divider"></span>
-            <span>{{ codeGroups[1] }}</span>
-          </template>
-          <template v-else>------</template>
+      <template #left-actions>
+        <div class="swipe-btn bg-primary" @click="$emit('command', 'qr', item)">
+          <el-icon><Picture /></el-icon>
+          <span>{{ $t('vault.export_account') }}</span>
         </div>
-        <div class="next-code" v-if="isMobile && nextCode" :data-digits="digits">
-          <span>{{ nextCodeGroups[0] }}</span>
-          <span class="code-divider is-next"></span>
-          <span>{{ nextCodeGroups[1] }}</span>
-        </div>
-      </div>
-      <div class="code-right" v-if="currentCode !== '------'">
-        <el-progress 
-          type="circle" 
-          :percentage="percentage" 
-          :width="isCompact ? 24 : 30" 
-          :stroke-width="isCompact ? 2 : 3" 
-          :color="currentColor"
-        >
-          <template #default>
-            <span class="timer-text">{{ remaining }}</span>
-          </template>
-        </el-progress>
-      </div>
-      <div v-else class="code-right">
-        <el-icon class="is-loading"><Loading /></el-icon>
-      </div>
-    </div>
+      </template>
 
-    <!-- 🛡️ 冲突解决遮罩 (Conflict Resolution Overlay) -->
-    <div v-if="item.status === 'conflict'" class="conflict-overlay">
-       <div class="conflict-content">
-          <p class="conflict-text">{{ $t('vault.conflict_notice') }}</p>
-          <div class="conflict-actions">
-             <el-button size="small" type="primary" plain @click.stop="$emit('resolve-conflict', item.id, 'force')">
-                {{ $t('vault.force_sync') }}
-             </el-button>
-             <el-button size="small" type="danger" plain @click.stop="$emit('resolve-conflict', item.id, 'discard')">
-                {{ $t('vault.discard_local') }}
-             </el-button>
+      <template #right-actions>
+        <div class="swipe-btn bg-warning" @click="$emit('command', 'edit', item)">
+          <el-icon><Edit /></el-icon>
+          <span>{{ $t('common.edit') }}</span>
+        </div>
+        <div class="swipe-btn bg-danger" @click="$emit('command', 'delete', item)">
+          <el-icon><Delete /></el-icon>
+          <span>{{ $t('common.delete') }}</span>
+        </div>
+      </template>
+
+      <div class="card-inner-content">
+        <div class="card-header">
+          <div class="service-info">
+            <el-checkbox
+              :model-value="isSelected"
+              @change="$emit('toggle-selection', item.id)"
+              @click.stop
+            />
+            <VaultIcon :service="item.service" :size="isCompact ? 20 : 24" />
+            <h3 class="service-name" :title="item.service">
+              {{ item.service }}
+            </h3>
+            <el-tag size="small" v-if="item.category" effect="light">
+              {{ item.category }}
+            </el-tag>
+            <!-- 离线标记 -->
+            <el-tooltip
+              v-if="isPending && item.status !== 'conflict'"
+              :content="$t('vault.pending_sync_tip')"
+            >
+              <el-icon class="pending-icon ml-5"><Upload /></el-icon>
+            </el-tooltip>
+            <!-- 冲突标记 -->
+            <el-tooltip
+              v-if="item.status === 'conflict'"
+              :content="$t('vault.conflict_detected_tip')"
+            >
+              <el-icon class="conflict-icon ml-5" color="#F56C6C">
+                <WarningFilled />
+              </el-icon>
+            </el-tooltip>
           </div>
-       </div>
-    </div>
+
+          <el-dropdown
+            v-if="!layoutStore.isMobile"
+            trigger="click"
+            @command="(cmd) => $emit('command', cmd, item)"
+          >
+            <el-icon class="more-icon" @click.stop><MoreFilled /></el-icon>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="qr">
+                  <el-icon><Picture /></el-icon>
+                  {{ $t('vault.export_account') }}
+                </el-dropdown-item>
+                <el-dropdown-item command="edit">
+                  <el-icon><Edit /></el-icon>
+                  {{ $t('common.edit') }}
+                </el-dropdown-item>
+                <el-dropdown-item command="delete" class="text-danger">
+                  <el-icon><Delete /></el-icon>
+                  {{ $t('common.delete') }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
+
+        <p class="vault-name">{{ displayAccount }}</p>
+
+        <div
+          class="code-display-area"
+          @click.stop="$emit('copy-code', item, currentCode)"
+          @mousedown="handleRevealStart"
+          @mouseup="handleRevealEnd"
+          @mouseleave="handleRevealEnd"
+          @touchstart="handleRevealStart"
+          @touchend="handleRevealEnd"
+          @touchcancel="handleRevealEnd"
+        >
+          <div class="code-left">
+            <div class="current-code" :data-digits="digits">
+              <template v-if="currentCode && currentCode !== '------'">
+                <span>{{ codeGroups[0] }}</span>
+                <span class="code-divider"></span>
+                <span>{{ codeGroups[1] }}</span>
+              </template>
+              <template v-else>------</template>
+            </div>
+            <div
+              class="next-code"
+              v-if="isMobile && nextCode"
+              :data-digits="digits"
+            >
+              <span>{{ nextCodeGroups[0] }}</span>
+              <span class="code-divider is-next"></span>
+              <span>{{ nextCodeGroups[1] }}</span>
+            </div>
+          </div>
+          <div class="code-right" v-if="currentCode !== '------'">
+            <el-progress
+              type="circle"
+              :percentage="percentage"
+              :width="isCompact ? 24 : 30"
+              :stroke-width="isCompact ? 2 : 3"
+              :color="currentColor"
+            >
+              <template #default>
+                <span class="timer-text">{{ remaining }}</span>
+              </template>
+            </el-progress>
+          </div>
+          <div v-else class="code-right">
+            <el-icon class="is-loading"><Loading /></el-icon>
+          </div>
+        </div>
+
+        <!-- 🛡️ 冲突解决遮罩 (Conflict Resolution Overlay) -->
+        <div v-if="item.status === 'conflict'" class="conflict-overlay">
+          <div class="conflict-content">
+            <p class="conflict-text">{{ $t('vault.conflict_notice') }}</p>
+            <div class="conflict-actions">
+              <el-button
+                size="small"
+                type="primary"
+                plain
+                @click.stop="$emit('resolve-conflict', item.id, 'force')"
+              >
+                {{ $t('vault.force_sync') }}
+              </el-button>
+              <el-button
+                size="small"
+                type="danger"
+                plain
+                @click.stop="$emit('resolve-conflict', item.id, 'discard')"
+              >
+                {{ $t('vault.discard_local') }}
+              </el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </SwipeAction>
   </el-card>
 </template>
 
+
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import { MoreFilled, Edit, Delete, Picture, Loading, Upload, WarningFilled } from '@element-plus/icons-vue'
+import { MoreFilled, Edit, Delete, Picture, Loading, Upload, WarningFilled, Share } from '@element-plus/icons-vue'
 import VaultIcon from '@/features/vault/components/vaultIcon.vue'
+import SwipeAction from '@/shared/components/swipeAction.vue'
 import { generateTOTP } from '@/shared/utils/totp'
 import { useLayoutStore } from '@/features/home/store/layoutStore'
 import { useTotpTimer } from '@/features/vault/composables/useTotpTimer'
