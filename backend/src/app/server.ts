@@ -1,5 +1,6 @@
 import { serve } from '@hono/node-server';
 import cron from 'node-cron';
+import { initializeEnv } from '@/shared/utils/crypto.js';
 import app from '@/app/index.js';
 import { handleScheduledBackup } from '@/features/backup/backupRoutes.js';
 import fs from 'fs';
@@ -7,6 +8,10 @@ import path from 'path';
 import { migrateDatabase } from '@/shared/db/migrator.js';
 import { DbFactory } from '@/shared/db/factory.js';
 import { transformSqlForDialect } from '@/shared/db/dialects.js';
+import { nodeAssetsFetch } from '@/shared/utils/staticServer.js';
+
+// 0. 核心预初始化：在任何业务逻辑（如数据库工厂）启动前，先解密环境变量
+await initializeEnv(process.env);
 
 const logLevel = (process.env.LOG_LEVEL || 'info').toLowerCase();
 
@@ -105,138 +110,46 @@ const envTemplate = {
     ...process.env
 };
 
-// 8. Define the ASSETS.fetch logic for Node.js
-// This replaces Cloudflare's ASSETS.fetch
-const nodeAssetsFetch = async (request: Request): Promise<Response> => {
-    const url = new URL(request.url);
-    // Ensure we resolve the path relative to frontendDistPath and normalize it
-    let filePath = path.resolve(frontendDistPath, url.pathname.slice(1));
-
-    // Security: check that the file is actually inside frontendDistPath
-    if (!filePath.startsWith(frontendDistPath)) {
-        console.warn(`[Security] Blocked potential path traversal: ${url.pathname}`);
-        return new Response('Forbidden', { status: 403 });
-    }
-
-    // SPA fallback logic:
-    // 1. If it's the root path '/', serve index.html (Not a fallback)
-    // 2. If the file doesn't exist AND it's NOT a static asset request (no extension), serve index.html (This is a fallback)
-    // 3. If the client explicitly prefers HTML (navigation), serve index.html
-    const isAssetPath = url.pathname.startsWith('/assets/');
-    const isStaticAsset = isAssetPath || /\.(js|css|png|jpg|jpeg|gif|svg|ico|webmanifest|wasm|json|mjs|woff2|woff|ttf|map)$/i.test(url.pathname);
-    const prefersHtml = request.headers.get('Accept')?.includes('text/html');
-    let isFallback = false;
-    let isIndexHtml = false;
-
-    // 1. Root and direct index.html
-    if (url.pathname === '/' || url.pathname === '/index.html') {
-        const indexFile = path.join(frontendDistPath, 'index.html');
-        if (fs.existsSync(indexFile)) {
-            filePath = indexFile;
-            isIndexHtml = true;
-        }
-    }
-    // 2. SPA Route Fallback - NEVER fallback for assets, even if missing
-    else if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
-        // If it's an asset path, return 404 directly without falling back to index.html
-        if (isAssetPath) {
-            if (logLevel !== 'error' && logLevel !== 'warn') {
-                console.log(`[Static] Asset Missing (No Fallback): ${url.pathname}`);
-            }
-            return new Response('Asset Not Found', { status: 404 });
-        }
-
-        if (!isStaticAsset || prefersHtml) {
-            const fallbackPath = path.join(frontendDistPath, 'index.html');
-            if (fs.existsSync(fallbackPath)) {
-                filePath = fallbackPath;
-                isFallback = true;
-            }
-        }
-    }
-
-    // 3. Final existance check (Strict for static assets)
-    if (!fs.existsSync(filePath) || (fs.statSync(filePath).isDirectory() && !isIndexHtml && !isFallback)) {
-        if (logLevel !== 'error' && logLevel !== 'warn') {
-            console.log(`[Static] 404 Not Found: ${url.pathname}`);
-        }
-        return new Response('Not Found', { status: 404 });
-    }
-
-    const content = fs.readFileSync(filePath);
-    const ext = path.extname(filePath).toLowerCase();
-    const mimeTypes: { [key: string]: string } = {
-        '.html': 'text/html',
-        '.js': 'application/javascript',
-        '.css': 'text/css',
-        '.png': 'image/png',
-        '.jpg': 'image/jpeg',
-        '.gif': 'image/gif',
-        '.svg': 'image/svg+xml',
-        '.ico': 'image/x-icon',
-        '.webmanifest': 'application/manifest+json',
-        '.wasm': 'application/wasm',
-        '.json': 'application/json',
-        '.mjs': 'application/javascript',
-        '.woff2': 'font/woff2',
-        '.woff': 'font/woff',
-        '.ttf': 'font/ttf'
-    };
-
-    // 4. Fine-grained Cache Control
-    let cacheControl = 'public, max-age=3600';
-    if (url.pathname.includes('/assets/')) {
-        // Hashed assets - 1 year
-        cacheControl = 'public, max-age=31536000, immutable';
-    } else if (url.pathname === '/sw.js' || url.pathname === '/manifest.webmanifest' || url.pathname.includes('manifest.json')) {
-        // Critical PWA metadata - Never cache at edge/browser
-        cacheControl = 'no-store, no-cache, must-revalidate, proxy-revalidate';
-    } else if (isIndexHtml || isFallback) {
-        // Entry point - Check with server every time
-        cacheControl = 'no-cache';
-    }
-
-    if (logLevel !== 'error' && logLevel !== 'warn') {
-        const type = isFallback ? '[Fallback]' : (isIndexHtml ? '[Index]' : '[File]');
-        console.log(`[Static] ${type} ${url.pathname} -> ${path.basename(filePath)} (${mimeTypes[ext] || 'bin'})`);
-    }
-
-    const headers: Record<string, string> = {
-        'Content-Type': mimeTypes[ext] || 'application/octet-stream',
-        'Cache-Control': cacheControl,
-    };
-
-    // Only add the fallback header if it's truly a secondary route fallback
-    if (isFallback) {
-        headers['X-NodeAuth-SPA-Fallback'] = 'true';
-    }
-
-    return new Response(content, { headers });
-};
-
-// 8. Cron Triggers
+// 8. Cron Triggers (Daily at 2 AM)
 cron.schedule('0 2 * * *', async () => {
     try {
-        console.log('[Cron] Triggering daily backup...');
+        if (logLevel !== 'error' && logLevel !== 'warn') {
+            console.log('[Cron] Triggering daily backup...');
+        }
         await handleScheduledBackup(envTemplate as any);
     } catch (e) {
         console.error('[Cron] Backup failed:', e);
     }
 });
 
-// 9. Start Server
+// 9. Startup Node.js Server
 const port = parseInt(process.env.PORT || '3000', 10);
+
+if (logLevel !== 'error' && logLevel !== 'warn') {
+    console.log(`[Docker Server] Starting NodeAuth on port ${port}...`);
+}
+
 serve({
-    fetch: (req) => {
+    fetch: async (req) => {
+        // 1. Check static assets first (Sync/Atomic in staticServer utility)
+        const assetResponse = await nodeAssetsFetch(req, { frontendDistPath, logLevel });
+
+        // 2. If it's a file, fallback, or any non-404 result, return it
+        if (assetResponse.status !== 404) {
+            return assetResponse;
+        }
+
+        // 3. Fallback to Hono App
         const env = {
             ...envTemplate,
-            ASSETS: { fetch: nodeAssetsFetch }
+            ASSETS: { fetch: (r: Request) => nodeAssetsFetch(r, { frontendDistPath, logLevel }) }
         };
+
         return app.fetch(req, env as any, {
             waitUntil: (p: Promise<any>) => p.catch(console.error)
         } as any);
     },
     port
 }, (info) => {
-    console.log(`[Docker Server] NodeAuth is running on http://localhost:${info.port}`);
+    console.log(`[Docker Server] NodeAuth is ready at http://localhost:${info.port}`);
 });

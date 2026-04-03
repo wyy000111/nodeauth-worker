@@ -14,12 +14,12 @@
     <div class="user-profile-header" v-if="mode === 'settings' && authUserStore.userInfo">
       <el-avatar 
         :size="72" 
-        :src="authUserStore.userInfo?.avatar || '/favicon.svg?20260330'" 
+        :src="authUserStore.userInfo?.avatar || '/pwa-cloudflare-192x192.png?20260402'" 
         class="profile-avatar"
         :class="{ 'is-logo': !authUserStore.userInfo?.avatar }"
         @error="(e) => true"
       >
-        <img src="/logo.svg?20260402" alt="NodeAuth" />
+        <img src="/pwa-cloudflare-192x192.png?20260402" alt="NodeAuth" />
       </el-avatar>
       <div class="profile-info">
         <div class="profile-name-row">

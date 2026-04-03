@@ -34,6 +34,7 @@ dev-dist/
 .wrangler/
 **/.wrangler/
 .devcontainer/
+.codeql/
 
 # 5. Testing Framework Caches (NOT tests/)
 .test/

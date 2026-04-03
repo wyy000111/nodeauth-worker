@@ -77,7 +77,8 @@
         "commit": "构建提交",
         "platform": "运行环境",
         "tagline": "一个十分安全的 2FA 服务管理工具",
-        "open_source_github": " GitHub 开源地址"
+        "open_source_github": " GitHub 开源地址",
+        "documentation": "Wiki 文档"
     },
     "vault": {
         "go_add_vault": "去添加账号",

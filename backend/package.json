@@ -33,7 +33,7 @@
     "drizzle-kit": "^0.31.9",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0",
-    "wrangler": "^4.75.0"
+    "wrangler": "4.75.0"
   },
   "overrides": {
     "esbuild": "0.25.0",

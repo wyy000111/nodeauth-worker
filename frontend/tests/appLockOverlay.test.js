@@ -3,7 +3,6 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import AppLockOverlay from '../src/features/applock/components/appLockOverlay.vue'
-import { useAppLockStore } from '../src/features/applock/store/appLockStore'
 
 // Mock store instance
 const mockStore = {
@@ -69,8 +68,8 @@ describe('AppLockOverlay Architectural Refactored Test', () => {
             }
         })
 
-        // 我们在组件内设置了 300ms 延迟以确保 UI 平滑
-        await vi.advanceTimersByTimeAsync(400)
+        // 组件内设置了 500ms 延时（解决 iOS 唤起竞争），测试需推进一步
+        await vi.advanceTimersByTimeAsync(600)
 
         // 验证：自动唤起时必须传 false
         expect(mockStore.unlockWithBiometric).toHaveBeenCalledWith(false)

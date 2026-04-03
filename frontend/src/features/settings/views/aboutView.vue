@@ -3,7 +3,7 @@
     <div class="page-header-container about-header">
       <div class="page-header-hero">
         <div class="hero-icon-wrapper">
-          <el-icon :size="32" color="#409EFC"><Lock /></el-icon>
+          <img src="/logo.svg?20260402" alt="NodeAuth" width="32px" height="32px" />
         </div>
         <h2 class="about-title">NodeAuth</h2>
       </div>
@@ -26,7 +26,7 @@
     </div>
 
     <div class="about-footer">
-      <p>&copy;{{ new Date().getFullYear() }} <a href="https://github.com/nodeauth/nodeauth-worker" target="_blank">{{ $t('about.open_source_github') }}</a></p>
+      <p>&copy;{{ new Date().getFullYear() }} <a href="https://github.com/nodeauth/nodeauth-worker" target="_blank" class="underline-link">{{ $t('about.open_source_github') }}</a> | <a href="https://wiki.nodeauth.io" target="_blank" class="underline-link">{{ $t('about.documentation') }}</a></p>
     </div>
   </div>
 </template>

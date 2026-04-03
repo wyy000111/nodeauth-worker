@@ -77,7 +77,8 @@
         "commit": "Commit Hash",
         "platform": "Platform",
         "tagline": "A Secure 2FA Management Tool",
-        "open_source_github": "Open Source on GitHub"
+        "open_source_github": "Open Source on GitHub",
+        "documentation": "Documentation"
     },
     "vault": {
         "go_add_vault": "Go to Add Account",

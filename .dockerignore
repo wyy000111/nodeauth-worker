@@ -7,7 +7,6 @@ dist/
 # --- WHITESPACE EXCEPTIONS FOR CI ---
 !frontend/dist/
 !backend/dist/
-!backend/node_modules/
 
 dev-dist/
 **/dev-dist/
@@ -60,8 +59,10 @@ Gitleaks_results.sarif
 .devcontainer/
 .git/
 .github/
+.codeql/
 Dockerfile
 docker-compose.yml
+docker-compose*.yml
 .gitignore
 .dockerignore
 LICENSE

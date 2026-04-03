@@ -34,11 +34,12 @@ export const CRYPTO_CONFIG = {
 
 
 /**
- * Internal: Normalize secrets to support 'base64:' or 'hex:' prefix
+ * Internal: Normalize secrets to support 'base64:', 'hex:', or 'aes:' prefix
  * If a secret starts with 'base64:', it will be decoded via atob.
  * If it starts with 'hex:', it will be converted from hexadecimal characters.
+ * If it starts with 'aes:', it will be decrypted using JWT_SECRET as root key.
  */
-export function normalizeSecret(secret: string): string {
+export async function normalizeSecret(secret: string, contextKey?: string): Promise<string> {
     if (!secret || typeof secret !== 'string') return secret;
 
     // Support Base64: prefix
@@ -64,7 +65,113 @@ export function normalizeSecret(secret: string): string {
         }
     }
 
+    // Support Aes: prefix (New feature)
+    if (secret.startsWith('aes:')) {
+        if (!contextKey) {
+            // EC-01, EC-06: Root key (JWT_SECRET) is required for decryption
+            throw new Error('[Crypto] Missing root key (JWT_SECRET) to decrypt aes: secret');
+        }
+        try {
+            const parts = secret.slice(4).split(':');
+            if (parts.length !== 3) throw new Error('Invalid AES format');
+
+            const [ivB64, tagB64, cipherB64] = parts;
+            if (!ivB64 || !tagB64 || !cipherB64) throw new Error('Invalid segments');
+
+            const iv = Uint8Array.from(atob(ivB64), c => c.charCodeAt(0));
+            const tag = Uint8Array.from(atob(tagB64), c => c.charCodeAt(0));
+            const ciphertextData = Uint8Array.from(atob(cipherB64), c => c.charCodeAt(0));
+
+            const combined = new Uint8Array(ciphertextData.length + tag.length);
+            combined.set(ciphertextData);
+            combined.set(tag, ciphertextData.length);
+
+            const key = await getDerivedEncryptionKey(contextKey);
+            const decrypted = await crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv },
+                key,
+                combined
+            );
+
+            return new TextDecoder().decode(decrypted);
+        } catch (e: any) {
+            // 只有在提供了 key 且解密失败时才报错
+            throw new Error(`[Crypto] Failed to decrypt aes: secret: ${e.message}`);
+        }
+    }
+
     return secret;
+}
+
+const derivedKeyCache = new Map<string, CryptoKey>();
+
+/**
+ * 环境变量专用密钥派生算法 (PBKDF2-SHA256)
+ * 用于从 JWT_SECRET 生成解密其他环境变量的 AES 密钥
+ */
+export async function getDerivedEncryptionKey(password: string): Promise<CryptoKey> {
+    if (derivedKeyCache.has(password)) {
+        return derivedKeyCache.get(password)!;
+    }
+
+    const encoder = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        encoder.encode(password),
+        { name: 'PBKDF2' },
+        false,
+        ['deriveKey']
+    );
+    const key = await crypto.subtle.deriveKey(
+        {
+            name: 'PBKDF2',
+            salt: encoder.encode('env_key_derivation_salt'),
+            iterations: 100000,
+            hash: 'SHA-256'
+        },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        true, // HP-07/08: Set extractable to true for verification and flexibility
+        ['encrypt', 'decrypt']
+    );
+
+    derivedKeyCache.set(password, key);
+    return key;
+}
+
+/**
+ * 全局环境变量初始化工具 (支持双层解析：先解 JWT 再解 AES)
+ */
+export async function initializeEnv(env: any) {
+    if (!env) return;
+
+    // 第一阶段：提取 JWT_SECRET
+    const rawJwt = env.JWT_SECRET || (typeof process !== 'undefined' ? process.env.JWT_SECRET : '');
+    let rootKey = '';
+    if (rawJwt && typeof rawJwt === 'string') {
+        rootKey = await normalizeSecret(rawJwt);
+        env.JWT_SECRET = rootKey;
+        // 在 Node 环境下同步到全局，确保非 request context 下也能读到
+        if (typeof process !== 'undefined') process.env.JWT_SECRET = rootKey;
+    }
+
+    // 第二阶段：递归处理所有其他字符串变量，包括依赖 rootKey 的 aes: 密文
+    for (const key in env) {
+        if (key === 'JWT_SECRET' || key === 'ASSETS') continue;
+        if (typeof env[key] === 'string') {
+            try {
+                const rawValue = env[key].trim();
+                const normalized = await normalizeSecret(rawValue, rootKey);
+                if (rawValue.startsWith('aes:')) {
+                    console.log(`[Init] Decrypted key "${key}" (Encrypted: ${rawValue.slice(0, 10)}...)`);
+                }
+                env[key] = normalized;
+                if (typeof process !== 'undefined') process.env[key] = normalized;
+            } catch (e) {
+                console.error(`[Init] Failed to normalize env key "${key}":`, e);
+            }
+        }
+    }
 }
 
 // 核心：从密码派生密钥
@@ -72,7 +179,7 @@ async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey>
     const enc = new TextEncoder();
     const keyMaterial = await crypto.subtle.importKey(
         "raw",
-        enc.encode(normalizeSecret(password)),
+        enc.encode(await normalizeSecret(password)),
         { name: CRYPTO_CONFIG.KDF_NAME },
         false,
         ["deriveKey"]
@@ -111,7 +218,7 @@ export async function generateSecureJWT(payload: Record<string, any>, secret: st
 
     const data = `${headerB64}.${payloadB64}`;
     const encoder = new TextEncoder();
-    const cryptoKey = await crypto.subtle.importKey('raw', encoder.encode(normalizeSecret(secret)), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    const cryptoKey = await crypto.subtle.importKey('raw', encoder.encode(await normalizeSecret(secret)), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
     const signature = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(data));
     const signatureB64 = btoa(String.fromCharCode(...new Uint8Array(signature))).replace(/[+/=]/g, (m) => ({ '+': '-', '/': '_', '=': '' }[m as keyof { '+': string, '/': string, '=': string }] || m));
 
@@ -126,7 +233,7 @@ export async function verifySecureJWT(token: string, secret: string): Promise<an
         const data = `${headerB64}.${payloadB64}`;
         const encoder = new TextEncoder();
 
-        const cryptoKey = await crypto.subtle.importKey('raw', encoder.encode(normalizeSecret(secret)), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+        const cryptoKey = await crypto.subtle.importKey('raw', encoder.encode(await normalizeSecret(secret)), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
         const signatureBytes = Uint8Array.from(atob(signatureB64.replace(/[-_]/g, (m) => ({ '-': '+', '_': '/' }[m as keyof { '-': string, '_': string }] || m))), c => c.charCodeAt(0));
         // @ts-ignore Cloudflare WebCrypto types mismatch with standard BufferSource
         const isValid = await crypto.subtle.verify('HMAC', cryptoKey, signatureBytes as any as ArrayBuffer, encoder.encode(data) as any as ArrayBuffer);
@@ -172,7 +279,7 @@ export async function generatePKCE() {
 // ⚡️ 极速模式：直接使用密钥的哈希值作为 AES 密钥 (无 PBKDF2)
 async function getFastKey(secret: string): Promise<CryptoKey> {
     const encoder = new TextEncoder();
-    const keyBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(normalizeSecret(secret)));
+    const keyBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(await normalizeSecret(secret)));
     return crypto.subtle.importKey('raw', keyBuffer, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
 }
 
@@ -248,7 +355,7 @@ export async function generateDeviceKey(userId: string, secret: string): Promise
     const encoder = new TextEncoder();
     const keyMaterial = await crypto.subtle.importKey(
         'raw',
-        encoder.encode(normalizeSecret(secret)),
+        encoder.encode(await normalizeSecret(secret)),
         { name: 'HMAC', hash: 'SHA-256' },
         false,
         ['sign']
