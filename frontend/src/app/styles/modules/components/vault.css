@@ -386,7 +386,7 @@
 .drag-floating-card {
     position: fixed;
     pointer-events: none;
-    z-index: 9999;
+    z-index: var(--z-index-popover);
     opacity: 0.95;
     transform: scale(1.05);
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3) !important;

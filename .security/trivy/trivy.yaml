@@ -1,0 +1,19 @@
+# Trivy Configuration File
+# 详见: https://aquasecurity.github.io/trivy/latest/docs/configuration/filtering/
+
+scan:
+  # 排除路径 (递归匹配 node_modules)
+  skip-dirs:
+    - "**/node_modules"
+    - "**/tests"
+    - ".git"
+    - "dist"
+
+misconfiguration:
+  # 设置扫描的严重度
+  severity:
+    - HIGH
+    - CRITICAL
+  # 只扫描 Dockerfile 相关，避免扫描 K8s (如果你们目前不需要使用 K8s)
+  scanners:
+    - dockerfile

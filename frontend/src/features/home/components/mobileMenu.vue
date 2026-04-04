@@ -72,7 +72,7 @@ const handleNav = (tab) => {
   justify-content: space-around;
   align-items: center;
   border-top: 0.5px solid var(--app-border-refined);
-  z-index: 1000;
+  z-index: var(--z-index-fixed);
   padding-bottom: calc(2px + env(safe-area-inset-bottom));
   padding-top: 8px;
   -webkit-tap-highlight-color: transparent;

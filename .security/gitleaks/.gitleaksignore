@@ -1,0 +1,25 @@
+# Gitleaks Ignore patterns (Fixed Path Matching)
+# These patterns match files processed during 'gitleaks detect'
+
+# Build and Vendor Noise
+**/node_modules/**
+**/dist/**
+**/dev-dist/**
+**/.wrangler/**
+**/.codeql/**
+**/.security/bin/**
+
+# Lock files
+package-lock.json
+
+# Secret/Env Files
+**/.actrc**
+**/.secrets**
+**/.env**
+**/.dev.vars**
+**/.demo.vars**
+**/.event**
+
+# External WASM/Binary
+**/*.wasm**
+**/*.map**

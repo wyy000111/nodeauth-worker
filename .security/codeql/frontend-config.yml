@@ -1,0 +1,11 @@
+name: "NodeAuth Frontend Custom Scanning"
+
+paths-ignore:
+  - '**/node_modules'
+  - '**/dist'
+  - '**/dev-dist'
+  - '**/public'
+  - '**/playwright-report'
+  - '**/e2e'
+  - 'vite.config.ts'
+  - '**/*.spec.ts'

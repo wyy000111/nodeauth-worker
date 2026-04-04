@@ -1,0 +1,6 @@
+name: "NodeAuth Backend Custom Scanning"
+
+paths-ignore:
+  - '**/.wrangler'
+  - '**/node_modules'
+  - '**/dist'

@@ -10,13 +10,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
  * 关键逻辑点：
  * 1. 单例模式 (Singleton)：多个订阅者必须复用同一个 setInterval 实例。
  * 2. 引用计数 (Ref Counting)：当最后一个订阅者销毁时，必须自动清理 Timer，防止内存泄漏。
- * 3. 精度同步：currentTime 应每秒更新一次，并基于本地系统时钟进行对齐。
+ * 3. 精度同步：currentTime 应每秒 update 一次，并基于本地系统时钟进行对齐。
  */
 
 // --- 模块模拟 ---
-vi.mock('vue', () => ({
-    ref: (val) => ({ value: val })
-}))
+// 使用 Vitest 环境自带的 Vue，不再手动 mock 以保持 ref 的行为一致
 
 vi.mock('@/shared/utils/totp', () => ({
     getAccurateTime: vi.fn(() => Date.now())
@@ -43,16 +41,17 @@ describe('useTotpTimer Composable - Singleton Heartbeat Test', () => {
      * 目标：验证冷启动。
      */
     it('should initialize currentTime with accurate system time', async () => {
-        getAccurateTime.mockReturnValue(12345000);
+        getAccurateTime.mockReturnValue(12345678);
         const module = await import('@/features/vault/composables/useTotpTimer');
 
-        const { currentTime } = module.useTotpTimer();
-        expect(currentTime.value).toBe(12345); // 时间戳转秒
+        const { currentTime, startTimer } = module.useTotpTimer();
+        startTimer(); // 必须调用以触发 initialized 逻辑
+
+        expect(Math.floor(currentTime.value)).toBe(Math.floor(12345678 / 1000));
     });
 
     /**
      * Case 02: 定时触发更新
-     * 目标：验证时钟步进。
      * 解决问题：确保每隔 1000ms 都会触发一次 currentTime 的递增，驱动 UI 上的进度条和验证码刷新。
      */
     it('should start a global timer and update currentTime after interval', async () => {
@@ -71,8 +70,7 @@ describe('useTotpTimer Composable - Singleton Heartbeat Test', () => {
 
     /**
      * Case 03: 全局单例行为
-     * 目标：防止重复创建定时器。
-     * 解决问题：即使金库列表、搜索结果等多个组件同时调用 startTimer()，系统也仅创建一个 setInterval 实例，降低能耗。
+     * 解决问题：即使多个组件同时调用 startTimer()，系统也仅创建一个 setInterval 实例。
      */
     it('should handle multiple subscribers correctly', async () => {
         const spySet = vi.spyOn(global, 'setInterval');
@@ -84,13 +82,12 @@ describe('useTotpTimer Composable - Singleton Heartbeat Test', () => {
         start1();
         start2();
 
-        expect(spySet).toHaveBeenCalledTimes(1); // 必须是 1 次
+        expect(spySet).toHaveBeenCalledTimes(1);
     });
 
     /**
      * Case 04: 资源自动清理
-     * 目标：引用计数清理。
-     * 解决问题：当用户登出或所有会用到倒计时的组件都卸载后，必须 clearInterval 停止心跳。
+     * 解决问题：当最后一个订阅者走了，彻底关停定时器。
      */
     it('should stop the global timer when all subscribers are gone', async () => {
         const spyClear = vi.spyOn(global, 'clearInterval');
@@ -103,9 +100,9 @@ describe('useTotpTimer Composable - Singleton Heartbeat Test', () => {
         start2();
 
         stop1();
-        expect(spyClear).not.toHaveBeenCalled(); // 只要有一个还在用，就不清
+        expect(spyClear).not.toHaveBeenCalled();
 
         stop2();
-        expect(spyClear).toHaveBeenCalled(); // 最后一个走了，彻底关停
+        expect(spyClear).toHaveBeenCalled();
     });
 });

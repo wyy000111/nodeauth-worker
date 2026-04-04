@@ -15,7 +15,7 @@
 
 /* 共有吸顶属性 */
 .vault-list-toolbar.is-affixed {
-    z-index: 2000;
+    z-index: var(--z-index-sticky);
     margin-bottom: 0 !important;
 }
 

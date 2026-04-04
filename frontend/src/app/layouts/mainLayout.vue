@@ -133,7 +133,7 @@ const handleTouchEnd = (e) => {
   align-items: center;
   justify-content: center;
   color: #fff;
-  z-index: 10000;
+  z-index: var(--z-index-gesture);
   pointer-events: none;
   font-size: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);

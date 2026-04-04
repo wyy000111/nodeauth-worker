@@ -160,7 +160,7 @@ export const csvStrategy = {
                 const totpVal = totpHeader ? (rowData[totpHeader] || '').trim() : ''
 
                 if (totpVal) {
-                    // 情况 A: 包含 otpauth:// 的 URI
+                    // 情况 A: 包含 otpauth:// 链接
                     if (totpVal.toLowerCase().startsWith('otpauth://')) {
                         const accData = parseOtpUri(totpVal)
                         if (accData) {

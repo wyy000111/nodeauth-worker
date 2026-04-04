@@ -198,7 +198,7 @@ const handleEmergencyReset = () => {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
   background: var(--el-bg-color);
-  z-index: 2000;
+  z-index: var(--z-index-lock);
   display: flex; align-items: center; justify-content: center;
 }
 .lock-panel { text-align: center; width: 100%; max-width: 320px; padding: 20px; }

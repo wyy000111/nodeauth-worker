@@ -10,7 +10,7 @@ import { parseOtpUri } from '@/shared/utils/totp'
  *   2. 对称解密: libsodium crypto_secretstream_xchacha20poly1305
  *      header = JSON 的 encryptionNonce (Base64)
  *      ciphertext = JSON 的 encryptedData (Base64)
- *   3. 明文格式: 换行分隔的 otpauth:// URI 列表，每个 URI 可能携带
+ *   3. 明文格式: 换行分隔的 otpauth:// 链接
  *      Ente 私有参数 `codeDisplay=...`，导入时直接忽略
  */
 export const enteStrategy = {
@@ -89,7 +89,7 @@ export const enteStrategy = {
             throw new Error('INVALID_FORMAT_OR_PASSWORD')
         }
 
-        // === Step 4: 解析明文 (换行分隔的 otpauth:// URI) ===
+        // === Step 4: 解析明文 (换行分隔的 otpauth:// 链接) ===
         const plainText = new TextDecoder().decode(decryptedBytes)
         const lines = plainText.split('\n')
         const results = []

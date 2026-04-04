@@ -50,8 +50,8 @@ describe('ResponsiveOverlay.vue - Stability and Visibility Test', () => {
         const drawer = wrapper.find('.el-drawer-stub')
         expect(drawer.exists()).toBe(true)
 
-        // Assertions for Z-Index and Append-to-Body (Fix for "Not Showing/Invisible" bugs)
-        expect(Number(drawer.attributes('z-index'))).toBe(4000)
+        // Assertions for Z-Index and Append-to-Body (Standardized to 2000)
+        expect(Number(drawer.attributes('z-index'))).toBe(2000)
         expect(drawer.attributes('append-to-body')).toBe('true')
         expect(drawer.attributes('class')).toContain('app-mobile-drawer')
     })

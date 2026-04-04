@@ -148,7 +148,7 @@
         background-color: var(--el-bg-color-overlay) !important;
         padding: 12px 24px !important;
         justify-content: center !important;
-        z-index: 5000 !important;
+        z-index: var(--z-index-toast) !important;
         /* Ensure it's above everything */
     }
 
@@ -250,7 +250,7 @@
 
     /* 4. Global Overlays & Feedback */
     .el-overlay {
-        z-index: 3500 !important;
+        z-index: var(--z-index-overlay) !important;
         /* Ensure it's above everything including navigation */
     }
 

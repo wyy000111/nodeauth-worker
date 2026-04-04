@@ -45,7 +45,7 @@ main {
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 9999;
+    z-index: var(--z-index-shell);
     background-color: var(--el-bg-color-page);
     display: flex;
     justify-content: center;

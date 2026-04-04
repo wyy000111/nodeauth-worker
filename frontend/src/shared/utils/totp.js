@@ -186,7 +186,7 @@ export function parseOtpUri(uri) {
   try {
     if (!uri) return null
 
-    // 1. 处理 steam:// 协议
+    // 1. 处理 steam:// 独立协议 (SDA 镜像导入)
     if (uri.startsWith('steam://')) {
       const secret = uri.replace('steam://', '').replace(/[\s=]/g, '').toUpperCase()
       if (!secret) return null
@@ -255,7 +255,7 @@ export function parseOtpUri(uri) {
 }
 
 /**
- * 构造标准的 otpauth:// URI (统一 Steam 协议兼容逻辑)
+ * 构造标准的 otpauth:// 导出链接
  */
 export function buildOtpUri(data) {
   const {
@@ -266,7 +266,7 @@ export function buildOtpUri(data) {
   const issuer = encodeURIComponent(service)
 
   if (algorithm === 'STEAM') {
-    // Steam 令牌的非标协议展示
+    // Steam 令牌的协议展示
     return `otpauth://totp/${label}?secret=${secret}&issuer=${issuer}`
   }
 

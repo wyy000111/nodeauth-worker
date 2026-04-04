@@ -65,7 +65,7 @@ const componentProps = computed(() => {
       'destroy-on-close': props.destroyOnClose,
       'close-on-click-modal': props.closeOnClickModal,
       'append-to-body': true,
-      'z-index': 4000, // Absolute top tier
+      'z-index': 2000,
       class: 'app-mobile-drawer'
     }
   } else {

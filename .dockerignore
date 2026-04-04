@@ -49,6 +49,7 @@ Gitleaks_results.sarif
 .actrc
 .event
 .example/
+.security/
 
 # 7. System & IDEs (Optional for Docker but good for hygiene)
 .DS_Store
