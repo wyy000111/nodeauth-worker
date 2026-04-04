@@ -7,13 +7,18 @@ import { getAccurateTime } from '@/shared/utils/totp'
  * 抛弃了以往遍历大数组的操作，彻底解除了由于修改 item 属性导致的父级 Vue List 响应式爆炸。
  * 提供单例模式下的高精度时钟，允许多个子卡片自由订阅而不再产生额外开销。
  */
-const currentTime = ref(getAccurateTime() / 1000)
+const currentTime = ref(Date.now() / 1000)
 let globalTimer = null
 let subscribers = 0
+let initialized = false
 
 export function useTotpTimer() {
     const startTimer = () => {
         subscribers++
+        if (!initialized) {
+            currentTime.value = getAccurateTime() / 1000
+            initialized = true
+        }
         if (!globalTimer) {
             // 每秒只推进唯一的一枚指针，时间复杂度永远 O(1)
             const tick = () => {

@@ -103,7 +103,6 @@ describe('Swipe Leakage Diagnostic Suite', () => {
             }
         })
 
-        const cardBody = container.querySelector('.el-card__body')
         const content = container.querySelector('.swipe-action-content')
 
         // 在 JSDOM 环境下，offsetWidth 通常为 0，我们需要检查 CSS 本身是否为 width: 100%

@@ -1,3 +1,5 @@
+import { cryptoObj, shouldUseDevCryptoFallback } from './crypto.js';
+
 // Base32 字母表
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'
 
@@ -119,10 +121,38 @@ export async function generateTOTP(secret, period = 30, digits = 6, algorithm = 
     // Web Crypto API 算法映射 (Steam 内部使用 SHA-1)
     const cryptoAlgo = { name: 'HMAC', hash: algorithm === 'STEAM' ? 'SHA-1' : algorithm }
 
-    const key = await window.crypto.subtle.importKey(
-      'raw', keyBytes, cryptoAlgo, false, ['sign']
-    )
-    const signature = await window.crypto.subtle.sign('HMAC', key, timeBuffer)
+    let signature;
+
+    if (shouldUseDevCryptoFallback('using hash-wasm fallback for TOTP generation.')) {
+      // 仅在开发环境且非安全上下文（例如移动端本地调试无 HTTPS）时，使用 hash-wasm 兜底
+      // 这是为了解决移动端局域网调试时无法获取 crypto.subtle 的问题
+      const { createHMAC, createSHA1, createSHA256, createSHA512 } = await import('hash-wasm');
+
+      let hasherPromise;
+      if (cryptoAlgo.hash === 'SHA-256') {
+        hasherPromise = createSHA256();
+      } else if (cryptoAlgo.hash === 'SHA-512') {
+        hasherPromise = createSHA512();
+      } else {
+        hasherPromise = createSHA1();
+      }
+
+      const hmac = await createHMAC(hasherPromise, keyBytes);
+      hmac.init();
+      hmac.update(new Uint8Array(timeBuffer));
+      const digestHex = hmac.digest('hex');
+
+      const signatureArray = new Uint8Array(digestHex.length / 2);
+      for (let i = 0; i < digestHex.length; i += 2) {
+        signatureArray[i / 2] = parseInt(digestHex.substring(i, i + 2), 16);
+      }
+      signature = signatureArray.buffer;
+    } else {
+      const key = await cryptoObj.subtle.importKey(
+        'raw', keyBytes, cryptoAlgo, false, ['sign']
+      )
+      signature = await cryptoObj.subtle.sign('HMAC', key, timeBuffer)
+    }
 
     const sigView = new DataView(signature)
     // 动态获取 offset (最后一个字节的低4位)

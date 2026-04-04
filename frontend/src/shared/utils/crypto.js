@@ -8,7 +8,33 @@ const ALGORITHM = 'AES-GCM';
 const HASH = 'SHA-256';
 
 // 兼容性的 Crypto 对象获取 (Node & Browser)
-const cryptoObj = typeof window !== 'undefined' ? (window.crypto || window.msCrypto) : globalThis.crypto;
+export const cryptoObj = typeof window !== 'undefined' ? (window.crypto || window.msCrypto) : globalThis.crypto;
+
+/**
+ * 校验 Web Crypto API 可用性并检查是否由于无 HTTPS 导致开发环境需要降级兜底
+ * @returns {boolean} 原生可用返回 false，需开发兜底返回 true
+ * @throws {Error} 生产环境若缺少原始加密原语则立刻阻断
+ */
+export function shouldUseDevCryptoFallback(warningMsg = 'Using development fallback.') {
+  if (cryptoObj && cryptoObj.subtle) {
+    return false;
+  }
+
+  // Runtime logic: check if we are on a local network URL dynamically. 
+  // Because Wrangler often serves a 'production' Vite build (dist) locally,
+  // import.meta.env.DEV will be false, so we must rely on runtime host detection.
+  if (typeof location !== 'undefined') {
+    const isLocalHost = location.hostname.startsWith('192.168.') || location.hostname.startsWith('10.');
+    const isHttp = location.protocol === 'http:';
+
+    if (isLocalHost && isHttp) {
+      console.warn(`Running locally via HTTP: ${warningMsg}`);
+      return true;
+    }
+  }
+
+  throw new Error('Web Crypto API (window.crypto.subtle) is not available. Please ensure the context is secure (HTTPS).');
+}
 
 /**
  * 将文本密码转换为加密密钥 (PBKDF2)
@@ -41,6 +67,12 @@ async function importKeyFromPassword(password, salt) {
  * 加密数据
  */
 export async function encryptDataWithPassword(data, password) {
+  if (shouldUseDevCryptoFallback('Skipping real encryption for Vault data.')) {
+    const enc = new TextEncoder();
+    const encodedData = enc.encode(JSON.stringify({ __dev_mock_encryption: true, data }));
+    return arrayBufferToBase64(encodedData);
+  }
+
   const salt = cryptoObj.getRandomValues(new Uint8Array(SALT_LENGTH));
   const iv = cryptoObj.getRandomValues(new Uint8Array(IV_LENGTH));
 
@@ -67,6 +99,20 @@ export async function encryptDataWithPassword(data, password) {
  * 解密数据
  */
 export async function decryptDataWithPassword(encryptedBase64, password) {
+  if (shouldUseDevCryptoFallback('Skipping real decryption for Vault data.')) {
+    try {
+      const decoded = base64ToArrayBuffer(encryptedBase64);
+      const dec = new TextDecoder();
+      const parsed = JSON.parse(dec.decode(decoded));
+      if (parsed.__dev_mock_encryption) {
+        return parsed.data;
+      }
+    } catch (e) {
+      // Fallthrough if parsing fails or not mocked
+    }
+    throw new Error('Web Crypto API missing: Cannot decrypt real secure data without HTTPS');
+  }
+
   try {
     const combined = base64ToArrayBuffer(encryptedBase64);
 

@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/vue'
-import { ref } from 'vue'
 import { createPinia, setActivePinia } from 'pinia'
 import VaultItemCard from '@/features/vault/components/vaultItemCard.vue'
 import { commonStubs } from './test-utils'

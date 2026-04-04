@@ -158,6 +158,7 @@ export type EnvBindings = {
     OAUTH_WALLETCONNECT_SELF_PROXY?: string; // 'true' or 'false'
     LOG_LEVEL?: string;
     SESSION_TTL_DAYS?: number;
+    ENVIRONMENT?: string;
 };
 
 // 自定义错误类

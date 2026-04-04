@@ -13,6 +13,8 @@ import { SessionService } from '@/features/auth/sessionService';
 
 const auth = new Hono<{ Bindings: EnvBindings, Variables: { user: any, sessionId: string } }>();
 
+const isSecureContext = (c: any) => c.env.ENVIRONMENT !== 'development';
+
 const getService = (c: any) => new AuthService(c.env);
 const getWebAuthnService = (c: any) => new WebAuthnService(c.env, c.req.url, c.req.header());
 const getWeb3WalletAuthService = (c: any) => new Web3WalletAuthService(c.env);
@@ -49,7 +51,7 @@ auth.get('/authorize/:provider', async (c) => {
     const stateCookieName = `oauth_state_${providerName}`;
     setCookie(c, stateCookieName, authData.state, {
         httpOnly: true,
-        secure: true,
+        secure: isSecureContext(c),
         sameSite: 'Lax', // 允许从第三方回调跳回时携带
         maxAge: 10 * 60, // 10分钟有效期
         path: '/',
@@ -81,7 +83,7 @@ auth.post('/callback/:provider', rateLimit({
     }
 
     // 校验通过，清理一次性 State Cookie
-    deleteCookie(c, stateCookieName, { path: '/', secure: true, sameSite: 'Lax' });
+    deleteCookie(c, stateCookieName, { path: '/', secure: isSecureContext(c), sameSite: 'Lax' });
     // --- State 闭环校验结束 ---
 
     const service = getService(c);
@@ -95,7 +97,7 @@ auth.post('/callback/:provider', rateLimit({
     // 1. 设置 httpOnly 的鉴权 Cookie
     setCookie(c, 'auth_token', token, {
         httpOnly: true,
-        secure: true,
+        secure: isSecureContext(c),
         sameSite: 'Lax',
         maxAge: 7 * 24 * 60 * 60, // 7天
         path: '/',
@@ -105,7 +107,7 @@ auth.post('/callback/:provider', rateLimit({
     const csrfToken = crypto.randomUUID();
     setCookie(c, 'csrf_token', csrfToken, {
         httpOnly: false,
-        secure: true,
+        secure: isSecureContext(c),
         sameSite: 'Lax',
         maxAge: 7 * 24 * 60 * 60,
         path: '/',
@@ -125,7 +127,7 @@ auth.post('/callback/:provider', rateLimit({
 
 // 退出登录
 auth.post('/logout', (c) => {
-    const cookieOpts = { path: '/', secure: true, sameSite: 'Lax' as const };
+    const cookieOpts = { path: '/', secure: isSecureContext(c), sameSite: 'Lax' as const };
     deleteCookie(c, 'auth_token', cookieOpts);
     deleteCookie(c, 'csrf_token', cookieOpts);
 
@@ -179,7 +181,7 @@ auth.get('/webauthn/register/options', authMiddleware, async (c) => {
 
     // 存储 challenge 到 Cookie
     setCookie(c, 'webauthn_registration_challenge', options.challenge, {
-        httpOnly: true, secure: true, sameSite: 'Lax', maxAge: 120, path: '/'
+        httpOnly: true, secure: isSecureContext(c), sameSite: 'Lax', maxAge: 120, path: '/'
     });
 
     return c.json(options);
@@ -200,7 +202,7 @@ auth.post('/webauthn/register/verify', authMiddleware, async (c) => {
     const identity = user.email || user.id;
     const result = await service.verifyRegistrationResponse(identity, body.response, expectedChallenge, name);
 
-    deleteCookie(c, 'webauthn_registration_challenge', { path: '/' });
+    deleteCookie(c, 'webauthn_registration_challenge', { path: '/', secure: isSecureContext(c) });
     return c.json(result);
 });
 
@@ -213,7 +215,7 @@ auth.get('/webauthn/login/options', rateLimit({
     const options = await service.generateAuthenticationOptions();
 
     setCookie(c, 'webauthn_login_challenge', options.challenge, {
-        httpOnly: true, secure: true, sameSite: 'Lax', maxAge: 120, path: '/'
+        httpOnly: true, secure: isSecureContext(c), sameSite: 'Lax', maxAge: 120, path: '/'
     });
 
     return c.json(options);
@@ -248,7 +250,7 @@ auth.post('/webauthn/login/verify', rateLimit({
     // 登录成功，重置限流计数器
     await resetRateLimit(c, `rl:${clientIp}:/api/auth/webauthn/login/verify`);
 
-    deleteCookie(c, 'webauthn_login_challenge', { path: '/' });
+    deleteCookie(c, 'webauthn_login_challenge', { path: '/', secure: isSecureContext(c) });
 
     return c.json({
         success: true,
@@ -298,7 +300,7 @@ auth.get('/web3/login/options', rateLimit({
     const options = await service.generateAuthenticationOptions();
 
     setCookie(c, 'web3_login_nonce', options.nonce, {
-        httpOnly: true, secure: true, sameSite: 'Lax', maxAge: 120, path: '/'
+        httpOnly: true, secure: isSecureContext(c), sameSite: 'Lax', maxAge: 120, path: '/'
     });
 
     return c.json(options);
@@ -335,11 +337,11 @@ auth.post('/web3/login/verify', rateLimit({
     // 防御 CSRF
     const csrfToken = crypto.randomUUID();
     setCookie(c, 'csrf_token', csrfToken, {
-        httpOnly: false, secure: true, sameSite: 'Lax', maxAge: 7 * 24 * 60 * 60, path: '/',
+        httpOnly: false, secure: isSecureContext(c), sameSite: 'Lax', maxAge: 7 * 24 * 60 * 60, path: '/',
     });
 
     await resetRateLimit(c, `rl:${clientIp}:/api/auth/web3/login/verify`);
-    deleteCookie(c, 'web3_login_nonce', { path: '/' });
+    deleteCookie(c, 'web3_login_nonce', { path: '/', secure: isSecureContext(c) });
 
     return c.json({
         success: true,

@@ -8,6 +8,8 @@ import { AppError } from '@/app/config';
 
 const backups = new Hono<{ Bindings: EnvBindings, Variables: { user: any } }>();
 
+const isSecureContext = (c: any) => c.env.ENVIRONMENT !== 'development';
+
 // === UNPROTECTED ROUTES (OAuth Callbacks) ===
 // These routes process 302 redirects from external providers.
 // They CANNOT be protected by CSRF middleware because they are GET requests initiated by external domains.
@@ -717,7 +719,7 @@ backups.post('/oauth/google/auth', async (c) => {
     // Store state in a short-lived cookie for verification in callback
     setCookie(c, 'gdrive_oauth_state', state, {
         path: '/api/backups/oauth/google/callback',
-        secure: true,
+        secure: isSecureContext(c),
         httpOnly: true,
         sameSite: 'Lax', // Lax is required for cross-site redirect callback
         maxAge: 600 // 10 minutes
@@ -751,7 +753,7 @@ backups.post('/oauth/microsoft/auth', async (c) => {
 
     setCookie(c, 'ms_oauth_state', state, {
         path: '/api/backups/oauth/microsoft/callback',
-        secure: true,
+        secure: isSecureContext(c),
         httpOnly: true,
         sameSite: 'Lax',
         maxAge: 600
@@ -782,7 +784,7 @@ backups.post('/oauth/baidu/auth', async (c) => {
 
     setCookie(c, 'baidu_oauth_state', state, {
         path: '/api/backups/oauth/baidu/callback',
-        secure: true,
+        secure: isSecureContext(c),
         httpOnly: true,
         sameSite: 'Lax',
         maxAge: 600
@@ -814,7 +816,7 @@ backups.post('/oauth/dropbox/auth', async (c) => {
 
     setCookie(c, 'dropbox_oauth_state', state, {
         path: '/api/backups/oauth/dropbox/callback',
-        secure: true,
+        secure: isSecureContext(c),
         httpOnly: true,
         sameSite: 'Lax',
         maxAge: 600
