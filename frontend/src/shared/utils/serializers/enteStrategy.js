@@ -1,5 +1,6 @@
 import { argon2id } from 'hash-wasm'
 import { parseOtpUri } from '@/shared/utils/totp'
+import { loadResource } from '@/shared/services/offlineRegistry'
 
 /**
  * Ente Auth 加密备份导入策略
@@ -132,8 +133,10 @@ let _sodiumInstance = null
 
 async function _getSodium() {
     if (_sodiumInstance) return _sodiumInstance
-    const sodium = await import('libsodium-wrappers-sumo')
-    await sodium.default.ready
-    _sodiumInstance = sodium.default
+    const sodiumModule = await loadResource('libsodium')
+    // 💡 架构师注：兼容拆包：如果 registry 返回的是 ESM 封装的 CJS，则从 default 中取
+    const sodium = sodiumModule?.default || sodiumModule
+    await sodium.ready
+    _sodiumInstance = sodium
     return _sodiumInstance
 }

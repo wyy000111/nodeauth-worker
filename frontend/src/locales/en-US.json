@@ -200,6 +200,7 @@
         "sync_failed": "Sync failed",
         "auth_missing": "Local security authorization has expired. Please log in again to ensure this device has offline storage capability.",
         "vault_unreachable": "Unable to reach account API. Please check your network and try again.",
+        "insecure_context_blocked": "Insecure context detected. Browser has disabled offline cache (HTTPS or localhost required).",
         "clipboard_cleared": "Clipboard cleared for security reasons",
         "clipboard_wipe_failed": "System restriction: unable to auto-clear clipboard. Please clear it manually.",
         "devices": "Login Device Management",

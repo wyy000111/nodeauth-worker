@@ -1,4 +1,5 @@
 import { cryptoObj, shouldUseDevCryptoFallback } from './crypto.js';
+import { loadResource } from '@/shared/services/offlineRegistry';
 
 // Base32 字母表
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'
@@ -126,7 +127,8 @@ export async function generateTOTP(secret, period = 30, digits = 6, algorithm = 
     if (shouldUseDevCryptoFallback('using hash-wasm fallback for TOTP generation.')) {
       // 仅在开发环境且非安全上下文（例如移动端本地调试无 HTTPS）时，使用 hash-wasm 兜底
       // 这是为了解决移动端局域网调试时无法获取 crypto.subtle 的问题
-      const { createHMAC, createSHA1, createSHA256, createSHA512 } = await import('hash-wasm');
+      const hwModule = await loadResource('hash-wasm');
+      const { createHMAC, createSHA1, createSHA256, createSHA512 } = hwModule?.default || hwModule;
 
       let hasherPromise;
       if (cryptoAlgo.hash === 'SHA-256') {

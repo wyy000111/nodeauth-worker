@@ -200,6 +200,7 @@
         "sync_failed": "同步失败",
         "auth_missing": "本地安全授权已失效，请重新登录，以确保当前设备具备物理离线存储能力。",
         "vault_unreachable": "无法连接到账号API，请检查网络后再试",
+        "insecure_context_blocked": "当前环境并不安全 (需强制 HTTPS 或使用 localhost)，浏览器禁用了离线缓存功能。",
         "clipboard_cleared": "出于安全考虑，剪贴板已清空",
         "clipboard_wipe_failed": "系统限制，无法自动清空剪贴板，请警惕泄露",
         "devices": "登录设备管理",

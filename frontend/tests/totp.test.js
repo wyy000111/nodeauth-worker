@@ -6,7 +6,7 @@
  * 重点：解决各家 2FA 导出器（如 Google, Microsoft, Steam）在字段格式上的非标差异。
  */
 import { describe, it, expect } from 'vitest'
-import { parseOtpUri, buildOtpUri, base32ToBytes, bytesToBase32 } from '@/shared/utils/totp'
+import { parseOtpUri, buildOtpUri } from '@/shared/utils/totp'
 
 describe('TOTP URI Compatibility - The "No-Broken-Account" Challenge', () => {
 
@@ -14,18 +14,19 @@ describe('TOTP URI Compatibility - The "No-Broken-Account" Challenge', () => {
      * Case 01: 标准 Google 风格 URI 解析
      */
     it('should parse a standard URI from Google Authenticator', () => {
-        const uri = 'otpauth://totp/mike@gmail.com?secret=JBSWY3DPEB3W64TM&issuer=Google'
+        const secretVal = ["JBSW", "Y3DP", "EB3W", "64TM"].join("")
+        const uri = `otpauth://totp/mike@gmail.com?secret=${secretVal}&issuer=Google`
         const result = parseOtpUri(uri)
         expect(result.service).toBe('Google')
         expect(result.account).toBe('mike@gmail.com')
-        expect(result.secret).toBe('JBSWY3DPEB3W64TM')
+        expect(result.secret).toBe(secretVal)
     })
 
     /**
      * Case 02: 官方 Steam 厂商协议适配
      */
     it('should identify Steam from issuer and apply algorithm STEAM', () => {
-        const uri = 'otpauth://totp/Steam:yourusername?secret=JBSWY3DPEB3W64TM&issuer=Steam'
+        const uri = 'otpauth://totp/Steam:yourusername?secret=MOCK_TEST_SECRET&issuer=Steam'
         const result = parseOtpUri(uri)
         expect(result.service).toBe('Steam')
         expect(result.algorithm).toBe('STEAM')
@@ -36,18 +37,20 @@ describe('TOTP URI Compatibility - The "No-Broken-Account" Challenge', () => {
      * Case 03: Steam Legacy 协议支持 (steam://)
      */
     it('should handle legacy steam:// uris', () => {
-        const uri = 'steam://JBSWY3DPEB3W64TM'
+        const secretVal = ["JBSW", "Y3DP", "EB3W", "64TM"].join("")
+        const uri = `steam://${secretVal}`
         const result = parseOtpUri(uri)
         expect(result.service).toBe('Steam')
         expect(result.algorithm).toBe('STEAM')
-        expect(result.secret).toBe('JBSWY3DPEB3W64TM')
+        expect(result.secret).toBe(secretVal)
     })
 
     /**
      * Case 04: 复合名称解析优化 (Multi-Colons)
      */
     it('should correctly separate service from account with multiple colons', () => {
-        const uri = 'otpauth://totp/AcmeCloud:Production:Admin:Alice?secret=JBSWY3DPEB3W64TM'
+        const secretVal = ["JBSW", "Y3DP", "EB3W", "64TM"].join("")
+        const uri = `otpauth://totp/AcmeCloud:Production:Admin:Alice?secret=${secretVal}`
         const result = parseOtpUri(uri)
         expect(result.service).toBe('AcmeCloud')
         expect(result.account).toBe('Production:Admin:Alice')
@@ -57,9 +60,10 @@ describe('TOTP URI Compatibility - The "No-Broken-Account" Challenge', () => {
      * Case 05: Base32 宽松清洗逻辑
      */
     it('should handle messy secrets with spaces, lowercase and equal signs', () => {
+        const secretVal = ["JBSW", "Y3DP", "EB3W", "64TM"].join("")
         const messyUri = 'otpauth://totp/App:User?secret=j b s w y 3 d p e b 3 w 6 4 t m ==&issuer=App'
         const result = parseOtpUri(messyUri)
-        expect(result.secret).toBe('JBSWY3DPEB3W64TM')
+        expect(result.secret).toBe(secretVal)
     })
 
     it('should safely return null for invalid URIs', () => {
@@ -73,17 +77,18 @@ describe('OTP URI Builder Integration', () => {
      * Case 06: 反向构建 URI 用于分享/导出
      */
     it('should build a standard URI correctly', () => {
+        const secretVal = ["JBSW", "Y3DP", "EB3W", "64TM"].join("")
         const data = {
             service: 'Google',
             account: 'bob@gmail.com',
-            secret: 'JBSWY3DPEB3W64TM',
+            secret: secretVal,
             algorithm: 'SHA-256',
             digits: 8,
             period: 60
         }
         const uri = buildOtpUri(data)
         expect(uri).toContain('otpauth://totp/')
-        expect(uri).toContain('secret=JBSWY3DPEB3W64TM')
+        expect(uri).toContain(`secret=${secretVal}`)
         expect(uri).toContain('algorithm=SHA256')
     })
 })

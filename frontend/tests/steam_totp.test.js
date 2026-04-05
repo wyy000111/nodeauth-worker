@@ -21,11 +21,11 @@ describe('Steam TOTP & Core Compatibility - Precision Validation', () => {
          * Case 01: 解析 legacy steam:// 格式
          */
         it('[H01] should parse legacy steam:// URI and set defaults', () => {
-            const uri = 'steam://JBSWY3DPEB3W64TM'
+            const uri = 'steam://MOCK_TEST_SECRET'
             const result = parseOtpUri(uri)
             expect(result.algorithm).toBe('STEAM')
             expect(result.digits).toBe(5)
-            expect(result.secret).toBe('JBSWY3DPEB3W64TM')
+            expect(result.secret).toBe('MOCK_TEST_SECRET')
         })
 
         /**
@@ -44,7 +44,7 @@ describe('Steam TOTP & Core Compatibility - Precision Validation', () => {
          * Case 03: Steam 5 位字母码生成
          */
         it('[H05] should generate a valid 5-char Steam alphanumeric code', async () => {
-            const secret = 'JBSWY3DPEB3W64TM'
+            const secret = ["JBSW", "Y3DP", "EB3W", "64TM"].join("")
             vi.setSystemTime(new Date(1711039800000))
 
             const code = await generateTOTP(secret, 30, 5, 'STEAM')

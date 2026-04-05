@@ -1,5 +1,6 @@
 import { parseOtpUri } from '@/shared/utils/totp';
-import * as openpgp from 'openpgp';
+import { loadResource } from '@/shared/services/offlineRegistry';
+
 
 /**
  * Proton Pass (.pgp) Strategy
@@ -11,6 +12,10 @@ export const protonPassStrategy = {
 
     async parse(armoredContent, password) {
         try {
+            // 🚀 动态安全加载：统一通过注册表拉取
+            const openpgpModule = await loadResource('openpgp');
+            const openpgp = openpgpModule?.default || openpgpModule;
+
             const message = await openpgp.readMessage({
                 armoredMessage: armoredContent
             });

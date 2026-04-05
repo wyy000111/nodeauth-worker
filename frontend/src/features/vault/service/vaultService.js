@@ -132,8 +132,21 @@ export const vaultService = {
      * @throws {vaultError} 创建失败时抛出错误
      */
     async createAccount(vaultData) {
-        const performOffline = () => {
+        const performOffline = async () => {
+            const vaultStore = useVaultStore()
             const syncStore = useVaultSyncStore()
+            const localData = await vaultStore.getData()
+            const currentVault = localData?.vault || []
+
+            const normalize = (s, a) => `${(s || '').trim().toLowerCase()}:${(a || '').trim().toLowerCase()}`
+            const newSig = normalize(vaultData.service, vaultData.account)
+
+            // 🛡️ 根源去重：如果本地已存在该账号，直接返回成功，不产生同步任务
+            if (currentVault.some(acc => normalize(acc.service, acc.account) === newSig)) {
+                console.warn('[VaultService] Account already exists locally, skipping duplicate create task')
+                return { success: true, alreadyExists: true }
+            }
+
             const tempId = `tmp_${Date.now()}`
             syncStore.enqueueAction('create', tempId, vaultData)
             return {
@@ -345,15 +358,28 @@ export const vaultService = {
      */
     async importVault(vault, type = 'raw') {
         const performOffline = async () => {
+            const vaultStore = useVaultStore()
             const syncStore = useVaultSyncStore()
+            const localData = await vaultStore.getData()
+            const currentVault = localData?.vault || []
+
+            const normalize = (s, a) => `${(s || '').trim().toLowerCase()}:${(a || '').trim().toLowerCase()}`
+            const existingSigs = new Set(currentVault.map(acc => normalize(acc.service, acc.account)))
+
             let insertedCount = 0
             const accounts = Array.isArray(vault) ? vault : (typeof vault === 'string' ? JSON.parse(vault) : [vault])
             const actions = []
 
             for (const acc of accounts) {
                 if (!acc) continue
+
+                const sig = normalize(acc.service, acc.account)
+                if (existingSigs.has(sig)) {
+                    console.debug('[VaultService] Skipping duplicate import in sync queue:', sig)
+                    continue
+                }
+
                 // ✅ Deep-clone to plain POJO before IDB storage
-                // (structured clone cannot handle File refs, Blobs, or non-serializable props from CSV parsers)
                 let plainAcc
                 try {
                     plainAcc = JSON.parse(JSON.stringify(acc))
@@ -365,6 +391,7 @@ export const vaultService = {
                 plainAcc.id = newId
                 actions.push({ type: 'create', id: newId, data: plainAcc })
                 insertedCount++
+                existingSigs.add(sig) // 防止本次导入批次内本身就有重复
             }
 
             if (actions.length > 0) {

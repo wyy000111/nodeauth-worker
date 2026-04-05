@@ -404,8 +404,23 @@ export class VaultService {
                 let res: any;
                 switch (type) {
                     case 'create':
-                        res = await this.createAccount(userId, data);
-                        results.push({ success: true, type, id: action.id, serverId: res.id });
+                        try {
+                            res = await this.createAccount(userId, data);
+                            results.push({ success: true, type, id: action.id, serverId: res.id });
+                        } catch (e: any) {
+                            if (e instanceof AppError && e.statusCode === 409) {
+                                // 🛡️ 幂等同步 (Idempotent Sync):
+                                // 如果发现账号已存在，查询该记录并返回其 serverId，视为同步成功
+                                const existing = await this.repository.findByServiceAccount(data.service, data.account);
+                                if (existing) {
+                                    results.push({ success: true, type, id: action.id, serverId: existing.id });
+                                } else {
+                                    throw e;
+                                }
+                            } else {
+                                throw e;
+                            }
+                        }
                         break;
                     case 'update':
                         try {

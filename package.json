@@ -1,6 +1,6 @@
 {
     "name": "nodeauth",
-    "version": "2.0.8",
+    "version": "2.0.9",
     "description": "High-security, Lightweight 2FA/TOTP management tool supporting Cloudflare Serverless and Docker on-premise deployment.",
     "author": "nodeauth",
     "license": "AGPL-3.0",
@@ -8,6 +8,8 @@
     "scripts": {
         "postinstall": "npm install --prefix backend && npm install --prefix frontend",
         "dev": "npm run dev --prefix backend & npm run dev --prefix frontend",
+        "deploy": "npx wrangler deploy --minify",
+        "deploy:demo": "npx wrangler deploy --config wrangler.demo.toml --minify",
         "test": "npm run test --prefix backend && npm run test --prefix frontend",
         "test:ui": "npm run test:ui --prefix frontend",
         "test:ui:update": "npm run test:ui:update --prefix frontend",

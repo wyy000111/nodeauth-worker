@@ -118,4 +118,40 @@ describe('VaultService Integration (Full Coverage)', () => {
             expect(res.count).toBe(5);
         });
     });
+
+    describe('batchSync idempotency', () => {
+        it('should return existing serverId when creating a duplicate account in batchSync', async () => {
+            const existingId = 'existing-uuid';
+            const action = {
+                id: 'tmp_1',
+                type: 'create',
+                data: { service: 'Github', account: 'test', secret: 'ABC' }
+            };
+
+            // 模拟仓库层发现已存在该账号
+            mockRepo.findByServiceAccount.mockResolvedValue({ id: existingId, service: 'Github', account: 'test' });
+
+            const results = await vaultService.batchSync('u1', [action as any]);
+
+            expect(results[0].success).toBe(true);
+            expect(results[0].serverId).toBe(existingId);
+            expect(mockRepo.create).not.toHaveBeenCalled();
+        });
+
+        it('should create new account when not found in batchSync', async () => {
+            const action = {
+                id: 'tmp_2',
+                type: 'create',
+                data: { service: 'NewSite', account: 'user', secret: 'XYZ' }
+            };
+
+            mockRepo.findByServiceAccount.mockResolvedValue(null);
+
+            const results = await vaultService.batchSync('u1', [action as any]);
+
+            expect(results[0].success).toBe(true);
+            expect(results[0].serverId).toBeDefined();
+            expect(mockRepo.create).toHaveBeenCalled();
+        });
+    });
 });
