@@ -21,8 +21,18 @@ const {
     isDownloading,
     canEnableOffline,
     checkAll,
-    downloadResources
+    downloadResources,
+    startMonitor,
+    stopMonitor
 } = useOfflineReadiness()
+
+watch(() => props.modelValue, (newVal) => {
+    if (newVal) {
+        startMonitor()
+    } else {
+        stopMonitor()
+    }
+})
 
 const handleClose = () => {
     emit('update:modelValue', false)
@@ -41,9 +51,6 @@ const getStatusType = (val) => {
     return '' // Fix: Element Plus el-progress 'status' does not support 'info'
 }
 
-onMounted(() => {
-    checkAll()
-})
 </script>
 
 <template>

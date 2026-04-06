@@ -6,8 +6,13 @@ import { OFFLINE_RESOURCES } from '@/shared/services/offlineRegistry';
 vi.mock('@/features/vault/store/vaultStore', () => ({
     useVaultStore: () => ({
         saveData: vi.fn().mockResolvedValue(true),
-        getData: vi.fn().mockResolvedValue({ vault: [], categoryStats: [] })
+        getData: vi.fn().mockResolvedValue({ vault: [], categoryStats: [] }),
+        updateMetadata: vi.fn().mockResolvedValue(true)
     })
+}));
+
+vi.mock('@/features/home/store/layoutStore', () => ({
+    useLayoutStore: vi.fn(() => ({ isOffline: true }))
 }));
 
 const mockSyncStore = {

@@ -174,6 +174,11 @@ const submitAddVault = async () => {
       try {
         const data = await vaultService.createAccount(newVault.value)
         if (data.success) {
+          // 💡 实时补偿：增加服务器标称总量
+          if (!layoutStore.isOffline) {
+            await vaultStore.updateMetadata({ delta: 1 })
+          }
+
           ElMessage.success(t('vault.add_success'))
           newVault.value = { service: '', account: '', secret: '', category: '', digits: 6, period: 30, algorithm: 'SHA1' }
           vaultStore.markDirty()
@@ -227,6 +232,12 @@ const handleScanSuccess = async (uri) => {
     const addData = await vaultService.addFromUri(uri, 'Scan')
 
     if (addData.success) {
+      // � 物理落盘
+
+      // �💡 实时补偿
+      if (!layoutStore.isOffline) {
+        await vaultStore.updateMetadata({ delta: 1 })
+      }
       ElMessage.success(t('vault.add_success'))
       vaultStore.markDirty()
       emit('success')

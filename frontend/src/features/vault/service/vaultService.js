@@ -88,9 +88,8 @@ export const vaultService = {
                 }
 
                 // 🏛️ 架构级优化：离线模式下，直接返回全量本地数据 (不再分页)
-                // 解决问题：防止 Vue Query 的分页加载与 initCache 缓存策略产生竞争，导致内存数据残留或覆盖。
+                // 解决问题：防止 Vue Query 的分页加载与 initCache 缓存策略产生竞争，导致内存数据残留或覆盖。               
                 const total = items.length
-                const totalPages = 1 // 离线模式一次性交卷
 
                 // 本地统计分类 (全量：保持分类列表不因筛选而消失)
                 const fullVault = localData?.vault || []
@@ -106,7 +105,7 @@ export const vaultService = {
                     vault: items, // 直接返回全量，由 DynamicScroller 处理虚拟渲染性能
                     total,
                     categoryStats,
-                    pagination: { page: 1, limit: total, totalItems: total, totalPages }
+                    pagination: { page: 1, limit: total || 1, totalItems: total, totalPages: 1 }
                 }
 
             } catch (e) {

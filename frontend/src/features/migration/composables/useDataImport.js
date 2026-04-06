@@ -2,11 +2,13 @@ import { ref, computed, watch } from 'vue'
 import { ElMessage, ElNotification } from 'element-plus'
 import { dataMigrationService } from '@/features/migration/service/dataMigrationService'
 import { useVaultStore } from '@/features/vault/store/vaultStore'
+import { useLayoutStore } from '@/features/home/store/layoutStore'
 import { i18n } from '@/locales'
 
 export function useDataImport(emitFn) {
     const { t } = i18n.global
     const vaultStore = useVaultStore()
+    const layoutStore = useLayoutStore()
 
     // --- State ---
     const currentFileContent = ref('')
@@ -298,6 +300,11 @@ export function useDataImport(emitFn) {
             showBatchProgress.value = false
 
             if (data.success) {
+                // 💡 实时补偿：分母增加真正在后端创建成功的条数
+                if (!layoutStore.isOffline && data.count > 0) {
+                    await vaultStore.updateMetadata({ delta: data.count })
+                }
+
                 let msgHtml = t('migration.msg_total_files', { count: batchTotalJobs.value })
                 if (data.count > 0) {
                     msgHtml += t('migration.msg_success_accounts', { count: data.count })

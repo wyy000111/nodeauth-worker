@@ -21,6 +21,26 @@ vi.mock('@/shared/utils/request', () => ({
     request: vi.fn()
 }))
 
+vi.mock('@/features/applock/store/appLockStore', () => ({
+    useAppLockStore: vi.fn(() => ({
+        getDeviceKey: vi.fn().mockResolvedValue('test-key'),
+        isLocked: false
+    }))
+}))
+
+const mockLayoutStore = { isOffline: false }
+vi.mock('@/features/home/store/layoutStore', () => ({
+    useLayoutStore: vi.fn(() => mockLayoutStore)
+}))
+
+vi.mock('@/features/vault/store/vaultStore', () => ({
+    useVaultStore: vi.fn(() => ({
+        getData: vi.fn().mockResolvedValue({ vault: [] }),
+        saveData: vi.fn().mockResolvedValue(true),
+        updateMetadata: vi.fn().mockResolvedValue(true)
+    }))
+}))
+
 vi.mock('@/shared/utils/idb', () => ({
     getIdbItem: vi.fn().mockResolvedValue(null),
     setIdbItem: vi.fn().mockResolvedValue(true),
@@ -33,6 +53,7 @@ describe('Strategy 6: Offline Import & Fallback Queue', () => {
     beforeEach(() => {
         setActivePinia(createPinia())
         vi.clearAllMocks()
+        mockLayoutStore.isOffline = false
         Object.defineProperty(navigator, 'onLine', { value: true, configurable: true })
         syncStore = useVaultSyncStore()
         vi.spyOn(syncStore, 'enqueueAction')
@@ -59,6 +80,7 @@ describe('Strategy 6: Offline Import & Fallback Queue', () => {
          * 解决问题：在明确断网时，不应浪费系统资源去尝试 Fetch，直接改为本地队列存储。
          */
         it('HP-03: 纯离线状态侦听 (Zero Invocation)', async () => {
+            mockLayoutStore.isOffline = true
             Object.defineProperty(navigator, 'onLine', { value: false, configurable: true })
 
             const result = await vaultService.importVault({ account: 'test1' })
@@ -93,8 +115,13 @@ describe('Strategy 6: Offline Import & Fallback Queue', () => {
          * 解决问题：确保离线导入 1000 条记录时，系统不会因为序列化过大而阻塞 UI 线程。
          */
         it('EC-04: 十万级大批量导入在离线模式时的响应与同步器积压', async () => {
+            mockLayoutStore.isOffline = true
             Object.defineProperty(navigator, 'onLine', { value: false, configurable: true })
-            const largeArray = Array.from({ length: 1000 }, (_, i) => ({ id: `id-${i}` }))
+            const largeArray = Array.from({ length: 1000 }, (_, i) => ({
+                id: `id-${i}`,
+                service: `Service-${i}`,
+                account: 'user'
+            }))
 
             const result = await vaultService.importVault(largeArray)
 

@@ -225,7 +225,7 @@ export function useVaultList(afterLoadRef = null) {
      * 🛡️ 稳如泰山的数据更新器 (Safe State Updater)
      * 负责将分页请求到的数组合并入本地响应式 state。
      */
-    const processVaultUpdate = async (flatVault, stats) => {
+    const processVaultUpdate = async (flatVault, stats, serverTotalItems = 0) => {
         // 只有真的拿到了成功的分页数据，或者确定是离线下的清空意图，才执行更新
         const isExplicitSuccess = flatVault.length > 0 || (!!data.value && !isError.value && !isLoading.value && !isFetching.value)
 
@@ -273,10 +273,36 @@ export function useVaultList(afterLoadRef = null) {
 
         // 后台持久化到本地 IndexedDB (秒开基石)
         if (!searchQuery.value && !appLockStore.isLocked && flatVault.length > 0) {
-            setTimeout(async () => {
-                const clean = merged.map(({ currentCode, remaining, percentage, color, nextCode, ...raw }) => raw)
-                await vaultStore.saveData({ vault: clean, categoryStats: stats || localCategoryStats.value || [] })
-            }, 0)
+            // 🚨 致命缺陷修复：移除 setTimeout，同步执行写入以防止竞争冲突
+            try {
+                const localData = await vaultStore.getData()
+                const existingFullVault = localData?.vault || []
+
+                const cleanSubset = merged.map(({ currentCode, remaining, percentage, color, nextCode, ...raw }) => raw)
+                const cleanMap = new Map(cleanSubset.map(s => [s.id, s]))
+
+                // 用现有的最新子集替换掉全量缓存中的对应项，如果不在缓存里则追加
+                const nextFullVault = existingFullVault.map(item => {
+                    return cleanMap.has(item.id) ? cleanMap.get(item.id) : item
+                })
+
+                // 把本页有，但全量里没有的新增项塞回去
+                const existingFullIds = new Set(existingFullVault.map(i => i.id))
+                cleanSubset.forEach(item => {
+                    if (!existingFullIds.has(item.id)) {
+                        nextFullVault.push(item)
+                    }
+                })
+
+                await vaultStore.saveData({ vault: nextFullVault, categoryStats: stats || localCategoryStats.value || [] })
+
+                // 💡 仅在此处更新服务器宣称的总数量，利用 store 枢纽自动对账
+                if (serverTotalItems > 0 && !layoutStore.isOffline) {
+                    await vaultStore.updateMetadata({ serverTotal: serverTotalItems })
+                }
+            } catch (e) {
+                console.error('[useVaultList] IDB Cache partial sync failed', e)
+            }
         }
 
         // 触发外部 TOTP 计算引擎
@@ -292,8 +318,9 @@ export function useVaultList(afterLoadRef = null) {
 
         const allVaultItems = newData.pages.flatMap(p => p?.vault || [])
         const firstPageStats = newData.pages[0]?.categoryStats || []
+        const serverTotalItems = newData.pages[0]?.pagination?.totalItems || newData.pages[0]?.total || 0
 
-        processVaultUpdate(allVaultItems, firstPageStats)
+        processVaultUpdate(allVaultItems, firstPageStats, serverTotalItems)
     }, { immediate: true })
 
     // 🔓 架构级修复：解锁后自动重刷数据
@@ -334,6 +361,15 @@ export function useVaultList(afterLoadRef = null) {
     })
 
     const fetchVault = () => queryClient.invalidateQueries({ queryKey: ['vault'] })
+
+    // 🔴 核心修复：当手动离线模式切换时，必须 **重置** (reset) 而非仅仅 invalidate Vue Query 的分页缓存。
+    // 原因：useInfiniteQuery 在 queryKey 不变的情况下，会把离线返回的全量数据追加为新的一页 (pages[N+1])，
+    // 而不是清空旧页重新来过。flatMap 拍平所有页后，就同时包含了在线时积累的分页历史和离线全量，造成重复渲染。
+    // reset 会清空 pages 数组并强制从第 1 页重新请求，彻底杜绝此问题。
+    watch(() => layoutStore.isManualOffline, () => {
+        console.log('[useVaultList] Offline mode changed, resetting query cache to prevent duplicate pages...')
+        queryClient.resetQueries({ queryKey: ['vault'] })
+    })
 
     // 监测同步队列，一旦有变动且在网络允许且非离线模式的情况下，立即尝试同步
     watch([() => syncStore.hasPendingChanges, () => layoutStore.isOffline], ([hasPending, isOffline], [oldHasPending, wasOffline]) => {

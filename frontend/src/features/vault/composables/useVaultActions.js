@@ -7,6 +7,7 @@ import { vaultService } from '@/features/vault/service/vaultService'
 import { copyToClipboard } from '@/shared/utils/common'
 import { i18n } from '@/locales'
 import { useQueryClient } from '@tanstack/vue-query'
+import { useLayoutStore } from '@/features/home/store/layoutStore'
 import { buildOtpUri } from '@/shared/utils/totp'
 
 /**
@@ -24,6 +25,7 @@ import { buildOtpUri } from '@/shared/utils/totp'
  */
 export function useVaultActions(fetchVault, vault, categoryStats, serverVault = null) {
     const vaultStore = useVaultStore()
+    const layoutStore = useLayoutStore()
     const queryClient = useQueryClient()
     const { t } = i18n.global
 
@@ -53,6 +55,15 @@ export function useVaultActions(fetchVault, vault, categoryStats, serverVault = 
             )
             isBulkDeleting.value = true
             await vaultService.batchDelete(selectedIds.value)
+
+            // 🔥 直接物理抹除被删账号，阻止其在本地留存成为“离线幽灵”
+            await vaultStore.deleteItems(selectedIds.value)
+
+            // 💡 批量补偿：在线模式下同步扣除分母总量
+            if (!layoutStore.isOffline) {
+                await vaultStore.updateMetadata({ delta: -selectedIds.value.length })
+            }
+
             ElMessage.success(t('vault.delete_batch_success', { count: selectedIds.value.length }))
             selectedIds.value = []
             vaultStore.markDirty()
@@ -236,6 +247,15 @@ export function useVaultActions(fetchVault, vault, categoryStats, serverVault = 
                 cancelButtonText: t('common.cancel')
             })
             await vaultService.deleteAccount(vaultItem.id, { updatedAt: vaultItem.updatedAt })
+
+            // 🔥 直接物理抹除被删账号，阻止其从 Upsert Merge 中作为幽灵复活
+            await vaultStore.deleteItems([vaultItem.id])
+
+            // 💡 实时补偿：如果是在线删除成功，分母也同步减 1，维持雷达 100%
+            if (!layoutStore.isOffline) {
+                await vaultStore.updateMetadata({ delta: -1 })
+            }
+
             ElMessage.success(t('vault.delete_success'))
             vaultStore.markDirty()
             fetchVault()

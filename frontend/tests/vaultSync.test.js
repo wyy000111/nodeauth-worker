@@ -26,6 +26,33 @@ vi.mock('@/shared/utils/idb', () => ({
     removeIdbItem: vi.fn()
 }))
 
+vi.mock('@/features/applock/store/appLockStore', () => ({
+    useAppLockStore: vi.fn(() => ({
+        getDeviceKey: vi.fn().mockResolvedValue('test-key'),
+        isLocked: false
+    }))
+}))
+
+vi.mock('@/features/home/store/layoutStore', () => ({
+    useLayoutStore: vi.fn(() => ({ isOffline: true }))
+}))
+
+vi.mock('@/features/vault/store/vaultStore', () => ({
+    useVaultStore: vi.fn(() => ({
+        getData: vi.fn().mockResolvedValue({ vault: [] }),
+        saveData: vi.fn().mockResolvedValue(true),
+        updateMetadata: vi.fn().mockResolvedValue(true)
+    }))
+}))
+
+vi.mock('element-plus', () => ({
+    ElMessage: { success: vi.fn(), error: vi.fn(), warning: vi.fn() }
+}))
+
+vi.mock('@/locales', () => ({
+    i18n: { global: { t: (key) => key } }
+}))
+
 // Mock 基础网络状态，模拟 navigator.onLine 的切换
 const mockOnline = (status) => {
     Object.defineProperty(navigator, 'onLine', {

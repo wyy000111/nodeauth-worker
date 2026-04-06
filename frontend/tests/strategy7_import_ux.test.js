@@ -38,8 +38,15 @@ vi.mock('@/features/migration/service/dataMigrationService', () => ({
     }
 }))
 
+vi.mock('@/features/home/store/layoutStore', () => ({
+    useLayoutStore: vi.fn(() => ({ isOffline: true }))
+}))
+
 vi.mock('@/features/vault/store/vaultStore', () => ({
-    useVaultStore: () => ({ markDirty: vi.fn() })
+    useVaultStore: vi.fn(() => ({
+        markDirty: vi.fn(),
+        updateMetadata: vi.fn().mockResolvedValue(true)
+    }))
 }))
 
 import { ElNotification } from 'element-plus'

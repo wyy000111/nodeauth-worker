@@ -62,6 +62,10 @@ vi.mock('@/locales', () => ({
     i18n: { global: { t: (key) => key } }
 }))
 
+vi.mock('@/features/home/store/layoutStore', () => ({
+    useLayoutStore: vi.fn(() => ({ isOffline: false }))
+}))
+
 // 标准化导入
 import { useVaultActions } from '@/features/vault/composables/useVaultActions'
 

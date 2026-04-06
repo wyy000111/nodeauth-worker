@@ -1,4 +1,4 @@
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import { useVaultStore } from '@/features/vault/store/vaultStore'
 import { useVaultSyncStore } from '@/features/vault/store/vaultSyncStore'
 import { useAuthUserStore } from '@/features/auth/store/authUserStore'
@@ -73,8 +73,18 @@ export function useOfflineReadiness() {
         try {
             const localCount = await getIdbItem('vault:meta:local_count') || 0
             const serverTotal = await getIdbItem('vault:meta:server_total') || 0
-            const isAccountsReady = localCount > 0 && localCount >= serverTotal
-            status.value.accounts = isAccountsReady ? 100 : Math.floor((localCount / (serverTotal || 1)) * 100)
+
+            // 🛡️ 严格对账判定逻辑：分子物理数 必须 严格等于 分母逻辑数 且 大于 0
+            // 只要有一丁点不相等（即便是分子 > 分母），都视为缓存失真，报非 100%，引导同步
+            const isAccountsReady = serverTotal > 0 && localCount === serverTotal
+
+            if (isAccountsReady) {
+                status.value.accounts = 100
+            } else {
+                // 如果不相等，物理计算百分比，但最高封顶在 99%，确保“就绪雷达”不报 100%
+                const calculated = serverTotal > 0 ? Math.floor((localCount / serverTotal) * 100) : 0
+                status.value.accounts = Math.min(99, calculated)
+            }
         } catch (e) { status.value.accounts = 0 }
 
         // --- 2. 同步状态 (Sync Queue) ---
@@ -230,8 +240,7 @@ export function useOfflineReadiness() {
                     }
                 }
                 await vaultStore.saveData({ vault: allItems, categoryStats: firstRes.categoryStats || [] })
-                await setIdbItem('vault:meta:local_count', allItems.length)
-                await setIdbItem('vault:meta:server_total', total)
+                await vaultStore.updateMetadata({ serverTotal: total })
                 status.value.accounts = 100
             }
 
@@ -309,21 +318,34 @@ export function useOfflineReadiness() {
         }
     }
 
-    onMounted(() => {
+    const startMonitor = () => {
         checkAll()
-        checkTimer = setInterval(checkAll, 5000)
-    })
-    onUnmounted(() => { if (checkTimer) clearInterval(checkTimer) })
+        if (!checkTimer) {
+            checkTimer = setInterval(checkAll, 5000)
+        }
+    }
+
+    const stopMonitor = () => {
+        if (checkTimer) {
+            clearInterval(checkTimer)
+            checkTimer = null
+        }
+    }
+
+    onUnmounted(() => { stopMonitor() })
 
     return {
         status,
         overallProgress: computed(() => {
             const values = Object.values(status.value)
-            return Math.floor(values.reduce((a, b) => a + b, 0) / values.length)
+            const avg = Math.floor(values.reduce((a, b) => a + b, 0) / values.length)
+            return Math.min(100, avg)
         }),
         isDownloading,
         canEnableOffline: computed(() => Object.values(status.value).every(v => v === 100)),
         checkAll,
-        downloadResources
+        downloadResources,
+        startMonitor,
+        stopMonitor
     }
 }

@@ -22,9 +22,16 @@ describe('OfflineRegistry - 中心化资源注册表测试', () => {
             ...OFFLINE_RESOURCES.ENGINES
         ]
         allResources.forEach(res => {
-            expect(res.probe).toBeDefined()
-            expect(typeof res.probe).toBe('string')
-            expect(res.probe.length).toBeGreaterThan(0)
+            const probe = res.probe || res.probes;
+            expect(probe).toBeDefined();
+
+            if (Array.isArray(probe)) {
+                expect(probe.length).toBeGreaterThan(0);
+                expect(typeof probe[0]).toBe('string');
+            } else {
+                expect(typeof probe).toBe('string');
+                expect(probe.length).toBeGreaterThan(0);
+            }
         })
     })
 

@@ -125,6 +125,7 @@
         :infinite-scroll-disabled="isLoadMoreDisabled"
         :infinite-scroll-distance="300"
       >
+        <!-- 账号展示引擎：由 DynamicScroller 提供虚拟滚动支持，确保海量数据下的顺滑操作 -->
         <DynamicScroller
           class="vault-scroller"
           :items="gridRows"
@@ -663,8 +664,16 @@ const handleUnlocked = async () => {
 }
 
 const isInitializing = ref(true)
+
+onMounted(() => {
+    handleUnlocked()
+})
+
+onUnmounted(() => {
+  stopAutoScroll()
+})
+
 defineExpose({ fetchVault })
-onMounted(handleUnlocked)
 </script>
 
 <style scoped>
