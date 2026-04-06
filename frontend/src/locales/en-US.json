@@ -84,6 +84,7 @@
         "go_add_vault": "Go to Add Account",
         "loading_more": "Loading more...",
         "no_more_accounts": "No more accounts",
+        "reorder_offline_disabled": "Sorting is not supported in offline mode",
         "edit_account": "Edit Account",
         "service_name": "Service Name (e.g., Google, GitHub)",
         "account_identifier": "Account Identifier (e.g., Email)",

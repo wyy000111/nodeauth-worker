@@ -25,8 +25,8 @@
             <el-tag
               v-if="layoutStore.isManualOffline"
               size="small"
-              type="primary"
-              effect="plain"
+              type="warning"
+              effect="dark"
               class="status-tag manual-offline"
             >
               {{ $t('common.offline_tag') }}
@@ -34,8 +34,8 @@
             <el-tag
               v-else-if="layoutStore.isPhysicalOffline"
               size="small"
-              type="warning"
-              effect="plain"
+              type="danger"
+              effect="dark"
               class="status-tag passive-offline"
             >
               {{ $t('common.network_error_tag') }}

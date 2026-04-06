@@ -209,7 +209,7 @@ export function useVaultList(afterLoadRef = null) {
         data, fetchNextPage, hasNextPage, isFetchingNextPage,
         isLoading, isFetching, isError, refetch
     } = useInfiniteQuery({
-        queryKey: ['vault', searchQuery, selectedCategory, computed(() => layoutStore.appVaultViewMode)],
+        queryKey: ['vault', searchQuery, selectedCategory, computed(() => layoutStore.appVaultViewMode), () => layoutStore.isManualOffline],
         queryFn: fetchVaultPage,
         getNextPageParam: (lastPage) => {
             if (!lastPage || !lastPage.pagination) return undefined

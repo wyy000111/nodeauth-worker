@@ -84,6 +84,7 @@
         "go_add_vault": "去添加账号",
         "loading_more": "正在加载更多...",
         "no_more_accounts": "到底了，没有更多账号了",
+        "reorder_offline_disabled": "离线模式下暂不支持拖拽排序",
         "edit_account": "编辑账号",
         "service_name": "服务名称 (如 Google, GitHub)",
         "account_identifier": "账号标识 (如 邮箱地址)",

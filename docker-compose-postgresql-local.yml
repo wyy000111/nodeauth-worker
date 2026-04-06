@@ -1,6 +1,6 @@
 services:
   postgres-db:
-    image: docker.1ms.run/postgres:15-alpine
+    image: postgres:15-alpine
     environment:
       POSTGRES_PASSWORD: secure_password
       POSTGRES_DB: nodeauth

@@ -6,7 +6,6 @@ import { useVaultSyncStore } from '@/features/vault/store/vaultSyncStore'
 import { vaultService } from '@/features/vault/service/vaultService'
 import { copyToClipboard } from '@/shared/utils/common'
 import { i18n } from '@/locales'
-import { useQueryClient } from '@tanstack/vue-query'
 import { useLayoutStore } from '@/features/home/store/layoutStore'
 import { buildOtpUri } from '@/shared/utils/totp'
 
@@ -26,7 +25,6 @@ import { buildOtpUri } from '@/shared/utils/totp'
 export function useVaultActions(fetchVault, vault, categoryStats, serverVault = null) {
     const vaultStore = useVaultStore()
     const layoutStore = useLayoutStore()
-    const queryClient = useQueryClient()
     const { t } = i18n.global
 
     // --- 批量操作 ---
@@ -186,24 +184,13 @@ export function useVaultActions(fetchVault, vault, categoryStats, serverVault = 
             }
 
             if (newSortOrder !== null) {
-                // 乐观更新前端 sortOrder，防止 refetch 前的视觉回跳
+                // 乐观更新前端 sortOrder（serverVault.value 已由 vault setter 实时更新，无需再写 Query Cache）
                 movedItem.sortOrder = newSortOrder
-                queryClient.setQueriesData({ queryKey: ['vault'] }, (oldData) => {
-                    if (!oldData) return oldData
-                    let currentIndex = 0
-                    const newPages = oldData.pages.map(page => {
-                        const pageLen = page.vault?.length || 0
-                        const nextIndex = currentIndex + pageLen
-                        const updatedVault = serverOnlyList.slice(currentIndex, nextIndex)
-                        currentIndex = nextIndex
-                        return { ...page, vault: updatedVault }
-                    })
-                    return { ...oldData, pages: newPages }
-                })
 
                 try {
                     await vaultService.moveSortOrder(movedItem.id, newSortOrder)
                     vaultStore.markDirty()
+                    fetchVault() // 🔴 使所有分类缓存失效，防止切换分类时 watch(data) 用旧顺序覆盖 serverVault.value
                 } catch (e) {
                     successMsg?.close()
                     vault.value = oldFilteredItems
@@ -214,23 +201,13 @@ export function useVaultActions(fetchVault, vault, categoryStats, serverVault = 
         }
 
         // 5. 回退：无法分数插入（整数空间耗尽）→ 全量重排，同时后端用间距 1000 重建序列
+        // serverVault.value 已由 vault setter 实时更新，无需再写 Query Cache（写入会污染所有分类缓存）
         const serverOnlyIds = serverOnlyList.map(i => i.id)
-        queryClient.setQueriesData({ queryKey: ['vault'] }, (oldData) => {
-            if (!oldData) return oldData
-            let currentIndex = 0
-            const newPages = oldData.pages.map(page => {
-                const pageLen = page.vault?.length || 0
-                const nextIndex = currentIndex + pageLen
-                const updatedVault = serverOnlyList.slice(currentIndex, nextIndex)
-                currentIndex = nextIndex
-                return { ...page, vault: updatedVault }
-            })
-            return { ...oldData, pages: newPages }
-        })
 
         try {
             await vaultService.reorder(serverOnlyIds)
             vaultStore.markDirty()
+            fetchVault() // 🔴 使所有分类缓存失效，防止切换分类时 watch(data) 用旧顺序覆盖 serverVault.value
         } catch (e) {
             successMsg?.close()
             vault.value = oldFilteredItems

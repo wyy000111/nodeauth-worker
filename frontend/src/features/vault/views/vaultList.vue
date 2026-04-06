@@ -521,21 +521,27 @@ const handleMouseDown = (e, id) => {
     const targetEl = e.currentTarget
     let moved = false
     
+    const onEnd = () => {
+        if (moved) onDragEnd()
+        window.removeEventListener('mousemove', onMove)
+        window.removeEventListener('mouseup', onEnd)
+    }
+
     const onMove = (moveEv) => {
         if (!moved) {
             const dist = Math.sqrt(Math.pow(moveEv.clientX - startX, 2) + Math.pow(moveEv.clientY - startY, 2))
             if (dist > 5) {
+                // 🛡️ 延迟拦截：仅在确认拖拽意图（移动5px以上）而非点击时触发
+                if (layoutStore.isOffline) {
+                    ElMessage.warning(t('vault.reorder_offline_disabled'))
+                    onEnd()
+                    return
+                }
                 moved = true
                 onDragStart(startX, startY, id, targetEl)
             }
         }
         if (moved) onDragMove(moveEv.clientX, moveEv.clientY)
-    }
-    
-    const onEnd = () => {
-        if (moved) onDragEnd()
-        window.removeEventListener('mousemove', onMove)
-        window.removeEventListener('mouseup', onEnd)
     }
     
     window.addEventListener('mousemove', onMove)
@@ -556,6 +562,12 @@ const handleTouchStart = (e, id) => {
     let dragActivated = false
     
     const timer = setTimeout(() => {
+        // 🛡️ 延迟拦截：仅在确认长按拖拽激活（250ms）而非普通点击时触发
+        if (layoutStore.isOffline) {
+            ElMessage.warning(t('vault.reorder_offline_disabled'))
+            isPressing.value = null
+            return
+        }
         dragActivated = true
         isPressing.value = null
         onDragStart(startX, startY, id, targetEl)

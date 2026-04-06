@@ -62,12 +62,11 @@
 .status-tag {
     margin-left: 6px;
     border-radius: 4px;
-    font-size: 9px;
+    font-size: 10px;
     height: 18px;
-    line-height: 16px;
+    line-height: 18px;
     padding: 0 5px;
     pointer-events: none;
-    transform: scale(0.95);
 }
 
 /* Tag 过渡动画 */
