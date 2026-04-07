@@ -12,7 +12,7 @@ export function useBackupProviders() {
 
     const { providers, isLoading } = storeToRefs(backupStore)
     const { fetchProviders: storeFetch } = backupStore
-    const availableTypes = ref(['s3', 'telegram', 'webdav', 'email']) // Default types (mirrors backend hardcoded base; OAuth types added dynamically by API)
+    const availableTypes = ref(['s3', 'telegram', 'webdav', 'email', 'github']) // Default types
 
     // Form and Dialog State
     const showConfigDialog = ref(false)
@@ -26,6 +26,7 @@ export function useBackupProviders() {
     const isEditingS3Secret = ref(false)
     const isEditingTelegramToken = ref(false)
     const isEditingEmailPwd = ref(false)
+    const isEditingGithubToken = ref(false)
     const isAuthenticatingGoogle = ref(false)
     const isAuthenticatingMicrosoft = ref(false)
     const isAuthenticatingBaidu = ref(false)
@@ -34,10 +35,12 @@ export function useBackupProviders() {
     const authStatusMicrosoft = ref(null)
     const authStatusBaidu = ref(null)
     const authStatusDropbox = ref(null)
+    const authStatusGithub = ref(null)
     const authErrorMessageGoogle = ref('')
     const authErrorMessageMicrosoft = ref('')
     const authErrorMessageBaidu = ref('')
     const authErrorMessageDropbox = ref('')
+    const authErrorMessageGithub = ref('')
 
     const initialFormState = () => ({
         type: 'email',
@@ -51,6 +54,8 @@ export function useBackupProviders() {
             botToken: '', chatId: '',
             // OAuth (gdrive/onedrive/baidu/dropbox)
             refreshToken: '', folderId: '',
+            // GitHub
+            token: '', owner: '', repo: '', branch: 'main',
             // Email
             smtpHost: '', smtpPort: '587', smtpSecure: false, smtpUser: '', smtpPassword: '', smtpFrom: '', smtpTo: ''
         },
@@ -108,6 +113,7 @@ export function useBackupProviders() {
         isEditingS3Secret.value = false
         isEditingTelegramToken.value = false
         isEditingEmailPwd.value = false
+        isEditingGithubToken.value = false
         resetAuthStatuses()
         form.value = initialFormState()
         isAutoBackupPasswordSaved.value = false
@@ -121,6 +127,7 @@ export function useBackupProviders() {
         isEditingS3Secret.value = false
         isEditingTelegramToken.value = false
         isEditingEmailPwd.value = false
+        isEditingGithubToken.value = false
         resetAuthStatuses()
         currentProviderId.value = provider.id
         form.value = JSON.parse(JSON.stringify({
@@ -159,6 +166,10 @@ export function useBackupProviders() {
             if (!config.refreshToken) return t('backup.require_baidu_auth')
         } else if (form.value.type === 'dropbox') {
             if (!config.refreshToken) return t('backup.require_dropbox_auth')
+        } else if (form.value.type === 'github') {
+            if (!config.token) return t('backup.require_github_token')
+            if (!config.owner) return t('backup.require_github_owner')
+            if (!config.repo) return t('backup.require_github_repo')
         } else if (form.value.type === 'email') {
             if (!config.smtpHost) return t('backup.require_email_smtp_host')
             if (!config.smtpUser) return t('backup.require_email_smtp_user')
@@ -222,6 +233,8 @@ export function useBackupProviders() {
                 else if (type === 'onedrive') authStatusMicrosoft.value = 'success'
                 else if (type === 'baidu') authStatusBaidu.value = 'success'
                 else if (type === 'dropbox') authStatusDropbox.value = 'success'
+            } else {
+                ElMessage.error(t('backup.test_failed'))
             }
         } catch (e) {
             // Error is handled here natively since we silenced the global request.js interceptor for testConnection
@@ -251,6 +264,9 @@ export function useBackupProviders() {
                 } else if (type === 'dropbox') {
                     authStatusDropbox.value = 'error';
                     authErrorMessageDropbox.value = t('backup.token_expired_or_revoked');
+                } else if (type === 'github') {
+                    authStatusGithub.value = 'error';
+                    authErrorMessageGithub.value = t('backup.github_token_invalid_or_revoked');
                 }
 
                 // If we are editing an existing provider, update the global store to reflect the state
@@ -540,6 +556,7 @@ export function useBackupProviders() {
         isEditingS3Secret,
         isEditingTelegramToken,
         isEditingEmailPwd,
+        isEditingGithubToken,
         isAuthenticatingGoogle,
         isAuthenticatingMicrosoft,
         isAuthenticatingBaidu,
@@ -548,10 +565,12 @@ export function useBackupProviders() {
         authStatusMicrosoft,
         authStatusBaidu,
         authStatusDropbox,
+        authStatusGithub,
         authErrorMessageGoogle,
         authErrorMessageMicrosoft,
         authErrorMessageBaidu,
         authErrorMessageDropbox,
+        authErrorMessageGithub,
         form,
         isAutoBackupPasswordSaved,
         shouldUseExistingAutoBackupPassword,

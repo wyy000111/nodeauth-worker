@@ -350,6 +350,7 @@
         "waiting_authorization": "Waiting for authorization...",
         "token_expired_or_revoked": "Authorization has expired. Click \"Re-authorize\" to reconnect the storage provider.",
         "oauth_token_revoked": "Authorization token has expired, please re-authorize.",
+        "github_token_invalid_or_revoked": "Personal Access Token is invalid or expired. Please enter a valid Token.",
         "authorized_success_gd": "Google Drive Connected Successfully",
         "authorized_success_ms": "OneDrive Connected Successfully",
         "authorized_success_baidu": "Baidu Netdisk Connected Successfully",
@@ -438,8 +439,7 @@
         "import_success_count": "Successfully imported",
         "new_accounts": "new accounts!",
         "skipped_duplicates": "Automatically skipped",
-        "existing_accounts": "existing accounts.",
-        "restore_fail": "Restoration failed"
+        "existing_accounts": "existing accounts."
     },
     "migration": {
         "export": "Export Data",

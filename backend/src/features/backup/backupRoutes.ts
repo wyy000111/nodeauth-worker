@@ -628,7 +628,7 @@ backups.get('/providers', async (c) => {
     const providers = await service.getProvidersList();
 
     // Check which providers are enabled via environment variables
-    const availableTypes = ['s3', 'telegram', 'webdav', 'email'];
+    const availableTypes = ['s3', 'telegram', 'webdav', 'email', 'github'];
     if (c.env.OAUTH_GOOGLE_CLIENT_ID && c.env.OAUTH_GOOGLE_CLIENT_SECRET) {
         availableTypes.push('gdrive');
     }

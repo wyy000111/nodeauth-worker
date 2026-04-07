@@ -2,7 +2,7 @@ import { eq, desc } from 'drizzle-orm';
 import { EnvBindings, AppError } from '@/app/config';
 import { BackupRepository } from '@/shared/db/repositories/backupRepository';
 import { encryptData, decryptData, encryptBackupFile } from '@/shared/utils/crypto';
-import { BackupProvider, WebDavProvider, S3Provider, TelegramProvider, GoogleDriveProvider, OneDriveProvider, BaiduNetdiskProvider, DropboxProvider, EmailProvider } from '@/features/backup/providers';
+import { BackupProvider, WebDavProvider, S3Provider, TelegramProvider, GoogleDriveProvider, OneDriveProvider, BaiduNetdiskProvider, DropboxProvider, EmailProvider, GithubProvider } from '@/features/backup/providers';
 import { decryptField } from '@/shared/db/db';
 import { vault as vaultTable, backupProviders } from '@/shared/db/schema';
 
@@ -30,7 +30,8 @@ export class BackupService {
         onedrive: ['refreshToken'],
         baidu: ['refreshToken'],
         dropbox: ['refreshToken'],
-        email: ['smtpPassword']
+        email: ['smtpPassword'],
+        github: ['token']
     };
 
     private maskConfigForFrontend(type: string, config: any) {
@@ -112,6 +113,9 @@ export class BackupService {
                 break;
             case 'email':
                 provider = new EmailProvider(config, this.db, id, this.lang);
+                break;
+            case 'github':
+                provider = new GithubProvider(config);
                 break;
             default:
                 throw new AppError('provider_not_found', 400);

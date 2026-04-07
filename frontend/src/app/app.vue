@@ -103,7 +103,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <el-config-provider :locale="elementLocale">
+  <el-config-provider :locale="elementLocale" :z-index="5000">
     <!-- 主体应用 -->
     <div class="app-container" :class="{ 'is-blank-layout': route.meta.layout === 'blank' || !route.meta.requiresAuth }">
       <!-- 🟢 顶层安全锁遮罩 -->

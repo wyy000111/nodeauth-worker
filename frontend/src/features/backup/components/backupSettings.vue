@@ -96,8 +96,9 @@
           <el-select v-model="form.type" :placeholder="$t('backup.select_type')" class="w-full" :disabled="isEditing" :teleported="false">
             <el-option v-if="availableTypes.includes('email')" :label="$t('backup.type_email')" value="email" />
             <el-option v-if="availableTypes.includes('s3')" :label="$t('backup.type_s3')" value="s3" />
-            <el-option v-if="availableTypes.includes('telegram')" :label="$t('backup.type_telegram')" value="telegram" />
             <el-option v-if="availableTypes.includes('webdav')" :label="$t('backup.type_webdav')" value="webdav" />
+            <el-option v-if="availableTypes.includes('telegram')" :label="$t('backup.type_telegram')" value="telegram" />
+            <el-option v-if="availableTypes.includes('github')" :label="$t('backup.type_github')" value="github" />
             <el-option v-if="availableTypes.includes('gdrive')" :label="$t('backup.type_gdrive')" value="gdrive" />
             <el-option v-if="availableTypes.includes('onedrive')" :label="$t('backup.type_onedrive')" value="onedrive" />
             <el-option v-if="availableTypes.includes('dropbox')" :label="$t('backup.type_dropbox')" value="dropbox" />
@@ -405,6 +406,30 @@
             </div>
         </template>
 
+        <!-- GitHub 配置 -->
+        <template v-if="form.type === 'github'">
+          <el-form-item :label="$t('backup.github_token')">
+            <div v-if="isEditing && !isEditingGithubToken" class="flex flex-items-center flex-between bg-fill p-10 rounded-4 border-1 w-full h-32">
+              <span class="font-mono ls-2">******</span>
+              <el-button link type="primary" @click="isEditingGithubToken = true; form.config.token = ''">{{ $t('backup.modify') }}</el-button>
+            </div>
+            <el-input v-else v-model="form.config.token" type="password" show-password :placeholder="$t('backup.github_token_placeholder')" @input="authStatusGithub = null" />
+          </el-form-item>
+          <el-alert v-if="authStatusGithub === 'error'" :title="authErrorMessageGithub" type="error" show-icon :closable="false" class="mb-15" />
+          <el-form-item :label="$t('backup.github_owner')">
+            <el-input v-model="form.config.owner" :placeholder="$t('backup.github_owner_placeholder')" @input="authStatusGithub = null" />
+          </el-form-item>
+          <el-form-item :label="$t('backup.github_repo')">
+            <el-input v-model="form.config.repo" :placeholder="$t('backup.github_repo_placeholder')" @input="authStatusGithub = null" />
+          </el-form-item>
+          <el-form-item :label="$t('backup.github_branch')">
+            <el-input v-model="form.config.branch" :placeholder="$t('backup.github_branch_placeholder')" @input="authStatusGithub = null" />
+          </el-form-item>
+          <el-form-item :label="$t('backup.save_dir')">
+            <el-input v-model="form.config.saveDir" placeholder="/nodeauth-backup" @input="authStatusGithub = null" />
+          </el-form-item>
+        </template>
+
         <!-- Email (SMTP) 配置 -->
         <template v-if="form.type === 'email'">
           <el-alert type="info" :description="$t('backup.email_tip')" :closable="false" class="mb-15" show-icon />
@@ -587,13 +612,13 @@ const layoutStore = useLayoutStore()
 const {
   providers, isLoading, showConfigDialog, isEditing, isTesting, isSaving,
   testingProviderIds, testResults,
-  isEditingWebdavPwd, isEditingS3Secret, isEditingTelegramToken, isEditingEmailPwd, form,
+  isEditingWebdavPwd, isEditingS3Secret, isEditingTelegramToken, isEditingEmailPwd, isEditingGithubToken, form,
   isAutoBackupPasswordSaved, shouldUseExistingAutoBackupPassword, fetchProviders, openAddDialog,
   editProvider, testConnection, saveProvider, deleteProvider,
   startGoogleAuth, startMicrosoftAuth, startBaiduAuth, startDropboxAuth, handleAuthMessage,
   isAuthenticatingGoogle, isAuthenticatingMicrosoft, isAuthenticatingBaidu, isAuthenticatingDropbox,
-  authStatusGoogle, authStatusMicrosoft, authStatusBaidu, authStatusDropbox,
-  authErrorMessageGoogle, authErrorMessageMicrosoft, authErrorMessageBaidu, authErrorMessageDropbox,
+  authStatusGoogle, authStatusMicrosoft, authStatusBaidu, authStatusDropbox, authStatusGithub,
+  authErrorMessageGoogle, authErrorMessageMicrosoft, authErrorMessageBaidu, authErrorMessageDropbox, authErrorMessageGithub,
   setupAuthListener, availableTypes
 } = useBackupProviders()
 
@@ -641,7 +666,8 @@ const getProviderTypeTag = (type) => {
     onedrive: 'primary',
     baidu: 'primary',
     dropbox: 'primary',
-    email: 'success'
+    email: 'success',
+    github: 'warning'
   }
   return map[type] || 'info'
 }
