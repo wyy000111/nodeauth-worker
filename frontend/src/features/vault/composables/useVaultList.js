@@ -180,11 +180,17 @@ export function useVaultList(afterLoadRef = null) {
         const firstPage = data.value?.pages?.[0]
         const stats = firstPage?.categoryStats || localCategoryStats.value
         if (!stats) return []
+
         return stats.map(s => ({
             category: s.category || '',
             count: parseInt(s.count || 0, 10),
             id: s.category === '' ? '____UNCATEGORIZED____' : s.category
-        }))
+        })).sort((a, b) => {
+            // 优先按数量从多到少排序
+            if (b.count !== a.count) return b.count - a.count
+            // 数量相同时按字母顺序排序
+            return a.category.localeCompare(b.category)
+        })
     })
 
     /**

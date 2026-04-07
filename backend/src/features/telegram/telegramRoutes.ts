@@ -8,9 +8,11 @@ telegram.post('/webhook', async (c) => {
     const token = c.env.OAUTH_TELEGRAM_BOT_TOKEN;
     if (!token) return c.text('Bot Token not configured', 500);
 
-    // 1. 安全校验 (可选，建议在 setWebhook 时设置 secret_token)
-    // const secretToken = c.req.header('X-Telegram-Bot-Api-Secret-Token');
-    // if (secretToken !== c.env.TELEGRAM_WEBHOOK_SECRET) return c.text('Unauthorized', 403);
+    // 1. 安全校验 (建议在 setWebhook 时设置 secret_token)
+    const secretToken = c.req.header('X-Telegram-Bot-Api-Secret-Token');
+    if (c.env.OAUTH_TELEGRAM_WEBHOOK_SECRET && secretToken !== c.env.OAUTH_TELEGRAM_WEBHOOK_SECRET) {
+        return c.text('Unauthorized', 403);
+    }
 
     const update = await c.req.json();
 

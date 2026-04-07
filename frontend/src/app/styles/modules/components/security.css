@@ -132,3 +132,45 @@
   color: var(--el-text-color-placeholder);
   font-size: 20px;
 }
+
+.security-drawer .el-drawer__header {
+  margin-bottom: 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.flex-column-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.setting-item-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 强制取消移动端动画以保证键盘同步弹出 */
+.no-motion,
+.no-motion .el-overlay,
+.no-motion .el-drawer,
+.no-motion .el-dialog {
+  transition: none !important;
+  animation: none !important;
+}
+
+@media (max-width: 768px) {
+  .setting-item-right {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    margin-left: 10px;
+    flex-shrink: 0;
+  }
+}
+
+/* PIN 码输入框深度对齐：确保左右受力均衡，文字绝对居中 */
+.pin-input-centered .el-input__inner {
+  text-align: center !important;
+}

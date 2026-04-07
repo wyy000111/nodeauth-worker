@@ -63,6 +63,7 @@
       <!-- 搜索输入框 (移动端展开态) -->
       <div class="mobile-search-wrapper" v-if="layoutStore.isMobile && layoutStore.isSearchVisible">
         <el-input
+          ref="mobileSearchInput"
           v-model="layoutStore.searchQuery"
           :placeholder="$t('search.placeholder')"
           clearable
@@ -113,6 +114,7 @@
 </template>
 
 <script setup>
+import { ref, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Plus, Search, Sunny, Moon, Loading, ArrowLeft } from '@element-plus/icons-vue'
 import { useLayoutStore } from '@/features/home/store/layoutStore'
@@ -128,6 +130,17 @@ const router = useRouter()
 const layoutStore = useLayoutStore()
 const authUserStore = useAuthUserStore()
 const themeStore = useThemeStore()
+
+const mobileSearchInput = ref(null)
+
+// 监听搜索框显示状态，自动聚焦以呼出移动端键盘
+watch(() => layoutStore.isSearchVisible, (visible) => {
+  if (visible) {
+    nextTick(() => {
+      mobileSearchInput.value?.focus()
+    })
+  }
+})
 
 const tabTitles = {
   'vault': 'menu.vault',

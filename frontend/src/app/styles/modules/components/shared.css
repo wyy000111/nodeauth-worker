@@ -278,3 +278,49 @@
         opacity: 0.85;
     }
 }
+
+/* --- Global Fix: Resolve persistent off-center titles in Element Plus Modals --- */
+/* This handles both Native ElMessageBox and ResponsiveOverlay (ElDialog) */
+.el-message-box__header,
+.el-dialog__header {
+    position: relative !important;
+}
+
+/* --- Global Fix: Resolve persistent off-center titles in Element Plus Modals --- */
+/* Only apply correction when centered mode is active to avoid breaking Desktop config popups */
+.el-message-box--center .el-message-box__title,
+.el-dialog--center .el-dialog__title {
+    padding-left: 27px !important;
+}
+
+.el-message-box__title,
+.el-dialog__title {
+    box-sizing: border-box !important;
+    display: block !important;
+}
+
+@media (max-width: 767px) {
+
+    .el-message-box__title,
+    .el-dialog__title {
+        padding-left: 27px !important;
+    }
+}
+
+/* Ensure the close button stays on top and clickable */
+.el-message-box__headerbtn,
+.el-dialog__headerbtn {
+    z-index: 10 !important;
+}
+
+
+.el-dialog__headerbtn {
+    height: 16px !important;
+    width: 16px !important;
+}
+
+/* 3. ResponsiveOverlay & Dialog Customizations */
+.responsive-overlay-desktop.el-dialog {
+    border-radius: 12px;
+    overflow: hidden;
+}

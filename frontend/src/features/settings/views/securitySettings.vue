@@ -37,7 +37,7 @@
             </div>
             <div class="setting-item-right">
                <el-tag v-if="appLockStore.lockMode !== 'none'" type="success" size="small">{{ $t('security.locked_active') }}</el-tag>
-               <el-button v-if="appLockStore.lockMode === 'none'" type="primary" size="small" @click="showPinSetup = true">
+               <el-button v-if="appLockStore.lockMode === 'none'" type="primary" size="small" @click="handleSetupPin">
                  {{ $t('common.setup') }}
                </el-button>
                <el-button v-else type="danger" size="small" plain @click="handleDisableLock">
@@ -131,16 +131,23 @@
         v-model="showPinSetup"
         :title="$t('security.setup_pin_title')"
         width="400px"
+        :destroy-on-close="false"
+        :append-to-body="!layoutStore.isMobile"
+        :trap-focus="!layoutStore.isMobile"
+        :class="{ 'no-motion': layoutStore.isMobile }"
+        @opened="handleSetupOpened"
       >
         <div class="pin-setup-container" style="padding: 10px 0; text-align: center;">
           <p class="text-secondary mb-20">{{ $t('security.setup_pin_tip') }}</p>
           <div class="flex-column-center gap-20">
             <el-input 
+              ref="newPinInput"
               v-model="newPin" 
               type="password" 
               maxlength="6" 
               show-password 
               placeholder="000000"
+              class="pin-input-centered"
               style="width: 100%; max-width: 260px; font-size: 24px; letter-spacing: 4px;"
               @input="newPin = newPin.replace(/\D/g, '')"
               inputmode="numeric"
@@ -161,16 +168,23 @@
         v-model="showPinDisable"
         :title="$t('security.disable_pin_title')"
         width="400px"
+        :destroy-on-close="false"
+        :append-to-body="!layoutStore.isMobile"
+        :trap-focus="!layoutStore.isMobile"
+        :class="{ 'no-motion': layoutStore.isMobile }"
+        @opened="handleDisableOpened"
       >
         <div class="pin-setup-container" style="padding: 10px 0; text-align: center;">
           <p class="text-secondary mb-20">{{ $t('security.disable_pin_tip') }}</p>
           <div class="flex-column-center gap-20">
             <el-input 
+              ref="disablePinInput"
               v-model="disablePin" 
               type="password" 
               maxlength="6" 
               show-password 
               placeholder="••••••"
+              class="pin-input-centered"
               style="width: 100%; max-width: 260px; font-size: 24px; letter-spacing: 4px;"
               @input="disablePin = disablePin.replace(/\D/g, '')"
               inputmode="numeric"
@@ -191,19 +205,27 @@
         v-model="showReadinessDialog"
         @confirm="() => layoutStore.setOfflineMode(true)"
       />
+
+      <!-- 🛡️ 软键盘曼哈顿计划：隐藏占位符用于在移动端由于异步弹窗导致手势断裂时，同步唤起键盘 -->
+      <input 
+        ref="keyboardBridge"
+        type="password"
+        inputmode="numeric"
+        style="position: absolute; opacity: 0; pointer-events: none; top: -100px; left: -100px; height: 1px; width: 1px;"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import { useLayoutStore } from '@/features/home/store/layoutStore'
 import { useAppLockStore } from '@/features/applock/store/appLockStore'
 import { useAuthUserStore } from '@/features/auth/store/authUserStore'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 
-import { Lock, View, Monitor, ArrowRight, Connection, Timer } from '@element-plus/icons-vue'
+import { Lock, View, Monitor, ArrowRight, Connection, Timer, Close } from '@element-plus/icons-vue'
 import IconFaceID from '@/shared/components/icons/iconFaceID.vue'
 import IconPinCode from '@/shared/components/icons/iconPinCode.vue'
 
@@ -227,6 +249,31 @@ const showPinDisable = ref(false)
 const newPin = ref('')
 const disablePin = ref('')
 
+const newPinInput = ref(null)
+const disablePinInput = ref(null)
+const keyboardBridge = ref(null)
+
+// 专门处理弹窗打开后的精准聚焦，确保移动端键盘弹出
+const handleSetupOpened = () => {
+    nextTick(() => {
+        const input = newPinInput.value?.$el?.querySelector('input') || newPinInput.value?.input
+        if (input) {
+            input.focus()
+            input.click()
+        }
+    })
+}
+
+const handleDisableOpened = () => {
+    nextTick(() => {
+        const input = disablePinInput.value?.$el?.querySelector('input') || disablePinInput.value?.input
+        if (input) {
+            input.focus()
+            input.click()
+        }
+    })
+}
+
 const confirmPinSetup = async () => {
     try {
         await appLockStore.setupPin(newPin.value)
@@ -238,9 +285,35 @@ const confirmPinSetup = async () => {
     }
 }
 
+const handleSetupPin = () => {
+    // 强制同步执行，确在用户手势流内唤起键盘
+    keyboardBridge.value?.focus()
+    keyboardBridge.value?.click()
+
+    showPinSetup.value = true
+    
+    // 异步接力给真正的输入框
+    nextTick(() => {
+        const input = newPinInput.value?.$el?.querySelector('input') || newPinInput.value?.input
+        input?.focus()
+        input?.click()
+    })
+}
+
 const handleDisableLock = () => {
     disablePin.value = ''
+    
+    // 同步唤起键盘桥接器
+    keyboardBridge.value?.focus()
+    keyboardBridge.value?.click()
+
     showPinDisable.value = true
+
+    nextTick(() => {
+        const input = disablePinInput.value?.$el?.querySelector('input') || disablePinInput.value?.input
+        input?.focus()
+        input?.click()
+    })
 }
 
 const confirmDisable = async () => {
@@ -295,35 +368,5 @@ const handleOfflineToggle = (val) => {
     }
 }
 </script>
-
-
-<style scoped>
-.security-drawer :deep(.el-drawer__header) {
-  margin-bottom: 0;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-.flex-column-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.setting-item-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-@media (max-width: 768px) {
-  .setting-item-right {
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
-    margin-left: 10px;
-    flex-shrink: 0;
-  }
-}
-</style>
 
 
