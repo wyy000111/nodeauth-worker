@@ -180,6 +180,7 @@ export default defineConfig({
     }
   },
   build: {
+    target: 'esnext', // Set target to esnext to prevent destructuring transpilation issues
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
