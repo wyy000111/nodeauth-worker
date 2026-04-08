@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm';
-import { schemaMetadata, type SchemaMetadata } from '@/shared/db/schema/index.js';
+import { schemaMetadata, type SchemaMetadata } from '@/shared/db/schema/index';
 
 export class EmergencyRepository {
     private db: any;

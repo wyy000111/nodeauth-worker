@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getIdbItem, setIdbItem, removeIdbItem } from '@/shared/utils/idb'
-import { appLockService } from '../service/appLockService'
+import { appLockService } from '@/features/applock/service/appLockService'
 import { ElMessage } from 'element-plus'
 import { i18n } from '@/locales'
 

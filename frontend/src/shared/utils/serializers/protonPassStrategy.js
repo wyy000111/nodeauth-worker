@@ -1,5 +1,6 @@
 import { parseOtpUri } from '@/shared/utils/totp';
 import { loadResource } from '@/shared/services/offlineRegistry';
+import { logger } from '@/shared/utils/logger';
 
 
 /**
@@ -53,7 +54,7 @@ export const protonPassStrategy = {
 
             return results;
         } catch (err) {
-            console.error('Proton Pass PGP decryption failed:', err);
+            logger.error('Proton Pass PGP decryption failed:', err);
             throw new Error('INVALID_FORMAT_OR_PASSWORD');
         }
     }

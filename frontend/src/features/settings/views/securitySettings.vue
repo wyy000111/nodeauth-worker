@@ -230,7 +230,7 @@ import IconFaceID from '@/shared/components/icons/iconFaceID.vue'
 import IconPinCode from '@/shared/components/icons/iconPinCode.vue'
 
 import { ElMessage, ElMessageBox } from 'element-plus'
-import OfflineReadinessDialog from '../components/offlineReadinessDialog.vue'
+import OfflineReadinessDialog from '@/features/settings/components/offlineReadinessDialog.vue'
 
 import ResponsiveOverlay from '@/shared/components/responsiveOverlay.vue'
 

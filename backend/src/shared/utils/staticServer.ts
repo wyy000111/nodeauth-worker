@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { logger } from '@/shared/utils/logger';
 
 export interface StaticServerOptions {
     frontendDistPath: string;
@@ -11,7 +12,8 @@ export interface StaticServerOptions {
  * 遵循“原子探测 (Atomic Detection)”原则，消除文件系统竞争风险。
  */
 export const nodeAssetsFetch = async (request: Request, options: StaticServerOptions) => {
-    const { frontendDistPath, logLevel = 'info' } = options;
+    const { frontendDistPath } = options;
+
     const url = new URL(request.url);
 
     // 0. API 直通车：如果是 API 请求且不是文件，直接放行给 Hono 处理
@@ -55,9 +57,7 @@ export const nodeAssetsFetch = async (request: Request, options: StaticServerOpt
         if (!initialStats || initialStats.isDirectory()) {
             // 资产文件（图片、JS等）不应有备选，没找到就是 404
             if (isAssetPath) {
-                if (logLevel !== 'error' && logLevel !== 'warn') {
-                    console.log(`[Static] Asset Missing (No Fallback): ${url.pathname}`);
-                }
+                logger.info(`[Static] Asset Missing (No Fallback): ${url.pathname}`);
                 return new Response('Asset Not Found', { status: 404 });
             }
 
@@ -120,10 +120,8 @@ export const nodeAssetsFetch = async (request: Request, options: StaticServerOpt
             cacheControl = 'no-cache';
         }
 
-        if (logLevel !== 'error' && logLevel !== 'warn') {
-            const type = isFallback ? '[Fallback]' : (isIndexHtml ? '[Index]' : '[File]');
-            console.log(`[Static] ${type} ${url.pathname} -> ${path.basename(filePath)} (${mimeTypes[ext] || 'bin'})`);
-        }
+        const type = isFallback ? '[Fallback]' : (isIndexHtml ? '[Index]' : '[File]');
+        logger.info(`[Static] ${type} ${url.pathname} -> ${path.basename(filePath)} (${mimeTypes[ext] || 'bin'})`);
 
         return new Response(content, {
             status: 200,
@@ -139,9 +137,7 @@ export const nodeAssetsFetch = async (request: Request, options: StaticServerOpt
         }
 
         // 如果是因为文件不存在导致的失败，在此统一处理 404
-        if (logLevel !== 'error' && logLevel !== 'warn') {
-            console.log(`[Static] Access Failed: ${url.pathname}`);
-        }
+        logger.info(`[Static] Access Failed: ${url.pathname}`);
         return new Response('Not Found', { status: 404 });
     }
 };

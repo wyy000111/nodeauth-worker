@@ -163,7 +163,7 @@ const emit = defineEmits(['update:modelValue'])
 }
 
 .drawer-footer-area {
-    padding: 15px 20px calc(35px + env(safe-area-inset-bottom));
+    padding: 15px 20px calc(10px + env(safe-area-inset-bottom));
     border-top: 1px solid var(--el-border-color-extra-light);
     margin-top: 5px;
     flex-shrink: 0;

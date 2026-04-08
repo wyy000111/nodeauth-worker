@@ -44,6 +44,10 @@ try {
         ],
         minify: isProduction,
         sourcemap: true,
+        // 确保运行时动态读取环境变量，不进行预替换
+        define: {
+            'process.env.NODE_ENV': isProduction ? '"production"' : '"development"'
+        }
     });
     console.log(`✅ Build Success: dist/server.js is ready for ${isProduction ? 'production' : 'development'}.`);
 } catch (e) {

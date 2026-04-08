@@ -30,25 +30,26 @@ services:
       - LOG_LEVEL=info
       
       # =========== 登录供应商配置 (至少选择一种,推荐使用 Github) ===========
-      # Google 登录配置
-      # - OAUTH_GOOGLE_CLIENT_ID=
-      # - OAUTH_GOOGLE_CLIENT_SECRET=
-      # - OAUTH_GOOGLE_REDIRECT_URI=https://<your_domain>/oauth/callback
-
       # Github 登录配置
       # - OAUTH_GITHUB_CLIENT_ID=
       # - OAUTH_GITHUB_CLIENT_SECRET=
       # - OAUTH_GITHUB_REDIRECT_URI=https://<your_domain>/oauth/callback
-
-      # Telegram 登录配置
-      # - OAUTH_TELEGRAM_BOT_NAME=your_bot_name
-      # - OAUTH_TELEGRAM_BOT_TOKEN=your_bot_token
 
       # Cloudflare 登录配置
       # - OAUTH_CLOUDFLARE_CLIENT_ID=
       # - OAUTH_CLOUDFLARE_CLIENT_SECRET=
       # - OAUTH_CLOUDFLARE_REDIRECT_URI=https://<your_domain>/oauth/callback
       # - OAUTH_CLOUDFLARE_ORG_DOMAIN=https://<your_team>.cloudflareaccess.com
+
+      # Google 登录配置
+      # - OAUTH_GOOGLE_CLIENT_ID=
+      # - OAUTH_GOOGLE_CLIENT_SECRET=
+      # - OAUTH_GOOGLE_REDIRECT_URI=https://<your_domain>/oauth/callback
+
+      # Telegram 登录配置
+      # - OAUTH_TELEGRAM_BOT_NAME=your_bot_name
+      # - OAUTH_TELEGRAM_BOT_TOKEN=your_bot_token
+      # - OAUTH_TELEGRAM_WEBHOOK_SECRET=
 
       # Gitee 登录配置
       # - OAUTH_GITEE_CLIENT_ID=
@@ -63,3 +64,24 @@ services:
       # Web3 钱包登录 (WalletConnect)
       # - OAUTH_WALLETCONNECT_PROJECT_ID=
       # - OAUTH_WALLETCONNECT_SELF_PROXY=true
+
+      # =========== 云端备份供应商配置 ===========
+      # Google Drive
+      # - OAUTH_GOOGLE_CLIENT_ID=
+      # - OAUTH_GOOGLE_CLIENT_SECRET=
+      # - OAUTH_GOOGLE_BACKUP_REDIRECT_URI=https://<your_domain>/api/backups/oauth/google/callback
+
+      # Dropbox
+      # - OAUTH_DROPBOX_CLIENT_ID=
+      # - OAUTH_DROPBOX_CLIENT_SECRET=
+      # - OAUTH_DROPBOX_BACKUP_REDIRECT_URI=https://<your_domain>/api/backups/oauth/dropbox/callback
+
+      # Microsoft OneDrive
+      # - OAUTH_MICROSOFT_CLIENT_ID=
+      # - OAUTH_MICROSOFT_CLIENT_SECRET=
+      # - OAUTH_MICROSOFT_BACKUP_REDIRECT_URI=https://<your_domain>/api/backups/oauth/microsoft/callback
+
+      # 百度网盘
+      # - OAUTH_BAIDU_CLIENT_ID=
+      # - OAUTH_BAIDU_CLIENT_SECRET=
+      # - OAUTH_BAIDU_BACKUP_REDIRECT_URI=https://<your_domain>/api/backups/oauth/baidu/callback

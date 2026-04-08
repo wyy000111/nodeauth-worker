@@ -1,4 +1,4 @@
-import { DbEngine } from './executor';
+import { DbEngine } from '@/shared/db/executor';
 
 /**
  * Transform SQLite SQL to MySQL/Postgres compatible SQL.

@@ -1,7 +1,8 @@
 import { Context, Next } from 'hono';
 import { EnvBindings, AppError } from '@/app/config';
 import { eq } from 'drizzle-orm';
-import { rateLimits } from '@/shared/db/schema/index.js';
+import { rateLimits } from '@/shared/db/schema/index';
+import { logger } from '@/shared/utils/logger';
 
 /**
  * 核心速率限制中间件 (兼容 D1 Raw 和 Drizzle ORM)
@@ -101,7 +102,7 @@ export const rateLimit = (options: {
             // 如果是速率限制错误，继续抛出
             if (e instanceof AppError && e.statusCode === 429) throw e;
             // 其他数据库错误（如表不存在）记录日志但不中断业务
-            console.error('[RateLimit] Database error:', e.message);
+            logger.error('[RateLimit] Database error:', e.message);
         }
 
         await next();
@@ -122,6 +123,6 @@ export const resetRateLimit = async (c: Context<any>, key: string) => {
             await db.delete(rateLimits).where(eq(rateLimits.key, key));
         }
     } catch (e) {
-        console.error('[RateLimit] Reset failed:', e);
+        logger.error('[RateLimit] Reset failed:', e);
     }
 };

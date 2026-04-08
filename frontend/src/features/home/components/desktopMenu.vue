@@ -63,7 +63,7 @@ import { useAuthUserStore } from '@/features/auth/store/authUserStore'
 import { useLayoutStore } from '@/features/home/store/layoutStore'
 import { useI18n } from 'vue-i18n'
 import { setLanguage } from '@/locales'
-import { menuItems } from '../constants/navigation'
+import { menuItems } from '@/features/home/constants/navigation'
 
 const { t, locale } = useI18n()
 const authUserStore = useAuthUserStore()

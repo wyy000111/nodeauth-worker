@@ -1,5 +1,6 @@
-import { cryptoObj, shouldUseDevCryptoFallback } from './crypto.js';
+import { cryptoObj, shouldUseDevCryptoFallback } from '@/shared/utils/crypto.js';
 import { loadResource } from '@/shared/services/offlineRegistry';
+import { logger } from '@/shared/utils/logger';
 
 // Base32 字母表
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'
@@ -177,7 +178,7 @@ export async function generateTOTP(secret, period = 30, digits = 6, algorithm = 
     const otp = binary % Math.pow(10, digits)
     return otp.toString().padStart(digits, '0')
   } catch (e) {
-    console.error('TOTP Error', e)
+    logger.error('TOTP Error', e)
     return 'ERROR'
   }
 }

@@ -1,3 +1,4 @@
+import { logger } from '@/shared/utils/logger';
 /**
  * 统一加密标准模块 (Backend Version)
  * 算法: AES-GCM-256 + PBKDF2 (SHA-256)
@@ -47,7 +48,7 @@ export async function normalizeSecret(secret: string, contextKey?: string): Prom
         try {
             return atob(secret.slice(7));
         } catch (e) {
-            console.warn('[Crypto] Failed to decode base64 secret, using raw string');
+            logger.warn('[Crypto] Failed to decode base64 secret, using raw string');
             return secret;
         }
     }
@@ -60,7 +61,7 @@ export async function normalizeSecret(secret: string, contextKey?: string): Prom
             if (!bytesMatch) return secret;
             return String.fromCharCode(...bytesMatch.map(byte => parseInt(byte, 16)));
         } catch (e) {
-            console.warn('[Crypto] Failed to decode hex secret, using raw string');
+            logger.warn('[Crypto] Failed to decode hex secret, using raw string');
             return secret;
         }
     }
@@ -163,12 +164,12 @@ export async function initializeEnv(env: any) {
                 const rawValue = env[key].trim();
                 const normalized = await normalizeSecret(rawValue, rootKey);
                 if (rawValue.startsWith('aes:')) {
-                    console.log(`[Init] Decrypted key "${key}" (Encrypted: ${rawValue.slice(0, 10)}...)`);
+                    logger.info(`[Init] Decrypted key "${key}" (Encrypted: ${rawValue.slice(0, 10)}...)`);
                 }
                 env[key] = normalized;
                 if (typeof process !== 'undefined') process.env[key] = normalized;
             } catch (e) {
-                console.error(`[Init] Failed to normalize env key "${key}":`, e);
+                logger.error(`[Init] Failed to normalize env key "${key}":`, e);
             }
         }
     }

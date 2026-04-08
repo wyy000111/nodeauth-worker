@@ -1,6 +1,6 @@
 import pkg from 'pg';
 const { Pool } = pkg;
-import { DbExecutor, DbEngine } from './executor.js';
+import { DbExecutor, DbEngine } from '@/shared/db/executor';
 
 export class PgExecutor implements DbExecutor {
     readonly engine: DbEngine = 'postgres';

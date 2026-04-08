@@ -2,6 +2,7 @@ import { inArray } from 'drizzle-orm';
 import * as schema from '@/shared/db/schema';
 import { encryptData, decryptData } from '@/shared/utils/crypto';
 import { sanitizeInput } from '@/shared/utils/common';
+import { logger } from '@/shared/utils/logger';
 
 // removed createDb function as DB is now instantiated at the root
 // 加密并序列化字段
@@ -15,11 +16,12 @@ export async function decryptField(encryptedStr: string, key: string) {
     try {
         const encryptedObj = JSON.parse(encryptedStr);
         return await decryptData(encryptedObj, key);
-    } catch (e) {
-        console.error('Decryption failed', e);
+    } catch (e: any) {
+        logger.error('Decryption failed', e);
         return null;
     }
 }
+
 
 /**
  * 批量插入金库项目 (数据清洗 + 并行加密 + 分批写入)

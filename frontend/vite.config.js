@@ -158,7 +158,8 @@ export default defineConfig({
   define: {
     __COMMIT_HASH__: JSON.stringify(commitHash),
     __APP_VERSION__: JSON.stringify(appVersion),
-    __APP_PLATFORM__: JSON.stringify(appPlatform)
+    __APP_PLATFORM__: JSON.stringify(appPlatform),
+    'import.meta.env.VITE_LOG_LEVEL': JSON.stringify(process.env.VITE_LOG_LEVEL || 'warn')
   },
   resolve: {
     alias: {

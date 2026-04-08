@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { logger } from 'hono/logger';
+import { logger as hLogger } from 'hono/logger';
+import { logger } from '@/shared/utils/logger';
 import { secureHeaders } from 'hono/secure-headers';
 import { EnvBindings, getEffectiveCSP } from '@/app/config';
 import { initializeEnv } from '@/shared/utils/crypto';
@@ -42,14 +43,8 @@ app.use('*', async (c, next) => {
     await next();
 });
 
-// 1.2 请求日志记录 (基于 LOG_LEVEL 过滤)
-app.use('*', async (c, next) => {
-    const level = (c.env?.LOG_LEVEL || (typeof process !== 'undefined' ? process.env.LOG_LEVEL : 'info') || 'info').toLowerCase();
-    if (level !== 'error' && level !== 'warn') {
-        return logger()(c, next);
-    }
-    await next();
-});
+// 1.2 全球请求日志注入: 通过统一 Logger 进行过滤
+app.use('*', hLogger((str) => logger.info(str)));
 
 // 1.3 跨域策略 (CORS)
 app.use('/api/*', cors({
@@ -143,10 +138,10 @@ app.onError((err, c) => {
 
     // 生产环境下对非特定业务异常应用脱敏
     if (!isAppError && statusCode >= 500) {
-        console.error(`[CRITICAL ERROR] ${err.stack || err.message}`);
+        logger.error(`[CRITICAL ERROR] ${err.stack || err.message}`);
         message = 'internal_server_error';
     } else {
-        console.error(`[Server Error] ${err.message}`);
+        logger.error(`[Server Error] ${err.message}`);
     }
 
     return c.json({

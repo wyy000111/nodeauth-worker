@@ -1,5 +1,6 @@
 import argon2 from 'argon2-browser/dist/argon2-bundled.min.js';
 import { parseOtpUri } from '@/shared/utils/totp';
+import { logger } from '@/shared/utils/logger';
 
 /**
  * Proton Authenticator (.json) Strategy
@@ -99,7 +100,7 @@ export const protonAuthStrategy = {
             return results;
 
         } catch (err) {
-            console.error('Proton Authenticator decryption failed:', err);
+            logger.error('Proton Authenticator decryption failed:', err);
             throw new Error('INVALID_FORMAT_OR_PASSWORD');
         }
     }

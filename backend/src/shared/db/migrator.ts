@@ -1,5 +1,6 @@
-import { DbExecutor } from './executor.js';
-import { transformSqlForDialect } from './dialects.js';
+import { logger } from '@/shared/utils/logger';
+import { DbExecutor } from '@/shared/db/executor';
+import { transformSqlForDialect } from '@/shared/db/dialects';
 
 /**
  * 迁移条目
@@ -138,10 +139,10 @@ export async function migrateDatabase(db: DbExecutor) {
 
     if (pending.length === 0) return;
 
-    console.log(`[Database] Current engine: ${engine}. version: ${currentVersion}. Migrating to v${pending[pending.length - 1].version}...`);
+    logger.info(`[Database] Current engine: ${engine}. version: ${currentVersion}. Migrating to v${pending[pending.length - 1].version}...`);
 
     for (const m of pending) {
-        console.log(`[Database] Applying v${m.version}: ${m.name}`);
+        logger.info(`[Database] Applying v${m.version}: ${m.name}`);
         try {
             // 将复合 SQL 按分号拆分执行
             const engineSql = (m as any)[engine] || m.sqlite;
@@ -161,7 +162,7 @@ export async function migrateDatabase(db: DbExecutor) {
         } catch (e: any) {
             const msg = e.message?.toLowerCase() || '';
             if (msg.includes('duplicate column') || msg.includes('already exists') || msg.includes('duplicate key')) {
-                console.log(`[Database] Skip existing change in v${m.version}`);
+                logger.info(`[Database] Skip existing change in v${m.version}`);
                 const updateMetaRaw = engine === 'postgres'
                     ? 'INSERT INTO _schema_metadata ("key", "value") VALUES (\'version\', ?) ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED.value'
                     : "REPLACE INTO _schema_metadata (`key`, `value`) VALUES ('version', ?)";

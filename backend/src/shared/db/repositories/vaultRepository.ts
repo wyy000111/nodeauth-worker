@@ -1,5 +1,5 @@
 import { and, desc, eq, inArray, isNull, like, or, sql } from 'drizzle-orm';
-import { vault, type VaultItem, type NewVaultItem } from '@/shared/db/schema/index.js';
+import { vault, type VaultItem, type NewVaultItem } from '@/shared/db/schema/index';
 
 export class VaultRepository {
     private db: any;

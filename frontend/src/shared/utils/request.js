@@ -3,6 +3,7 @@ import { ElMessage } from 'element-plus'
 import { useAuthUserStore } from '@/features/auth/store/authUserStore'
 import { i18n } from '@/locales'
 import { removeIdbItem } from '@/shared/utils/idb'
+import { logger } from '@/shared/utils/logger'
 
 // 辅助函数：从 document.cookie 中安全地读取指定的 cookie 值
 export function getCookie(name) {
@@ -26,7 +27,7 @@ export async function request(url, options = {}) {
             url.includes('/api/oauth/me') ||
             url.includes('/api/health')
         if (!isAuthRoute) {
-            console.warn(`[Air-Gapped] Request blocked: ${url}`);
+            logger.warn(`[Air-Gapped] Request blocked: ${url}`);
             const offlineErr = new Error('offline_mode_active');
             offlineErr.isOffline = true;
             throw offlineErr;
@@ -186,7 +187,7 @@ export async function request(url, options = {}) {
         // 屏蔽被 silent 处理过的 Auth Error、OAuth 撤销信号、以及离线模式主动拦截的请求
         // isOffline 错误是系统主动拦截，不是真实网络故障，不应触发"网络错误"弹窗
         if (error.message !== 'Unauthorized/Forbidden' && !options.silent && !error.isOAuthRevoked && !error.isOffline) {
-            console.error('API Request Error:', error)
+            logger.error('API Request Error:', error)
 
             // Only show toast if it wasn't already shown in the !response.ok block above
             // The throwing logic above throws an Error with a specific format, we only toast here if it's a fetch/network level error

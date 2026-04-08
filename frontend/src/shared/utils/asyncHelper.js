@@ -1,6 +1,7 @@
 import { defineAsyncComponent, h, onMounted, defineComponent } from 'vue'
 import { ElEmpty, ElButton } from 'element-plus'
 import { i18n } from '@/locales'
+import { logger } from '@/shared/utils/logger'
 
 /**
  * 核心加载组件 - 具名导出以供 API 加载状态复用
@@ -87,13 +88,13 @@ export const AsyncLoading = defineComponent({
 export function createAsyncComponent(loader) {
     return defineAsyncComponent({
         loader: async () => {
-            console.log('[AsyncComponent] Starting to load component...')
+            logger.info('[AsyncComponent] Starting to load component...')
             try {
                 const comp = await loader()
-                console.log('[AsyncComponent] Component loaded successfully')
+                logger.info('[AsyncComponent] Component loaded successfully')
                 return comp
             } catch (err) {
-                console.error('[AsyncComponent] Component load failed:', err)
+                logger.error('[AsyncComponent] Component load failed:', err)
                 throw err
             }
         },
@@ -106,7 +107,7 @@ export function createAsyncComponent(loader) {
             name: 'AsyncError',
             props: ['error'],
             setup(props) {
-                console.error('[AsyncComponent] Rendering error component:', props.error)
+                logger.error('[AsyncComponent] Rendering error component:', props.error)
 
                 const t = (key) => {
                     try {
@@ -136,7 +137,7 @@ export function createAsyncComponent(loader) {
         // 错误重试逻辑
         onError(error, retry, fail, attempts) {
             if (attempts <= 2) {
-                console.warn(`[AsyncComponent] Loading failed, retrying (${attempts}/2)...`, error)
+                logger.warn(`[AsyncComponent] Loading failed, retrying (${attempts}/2)...`, error)
                 setTimeout(() => retry(), 500)
             } else {
                 fail()

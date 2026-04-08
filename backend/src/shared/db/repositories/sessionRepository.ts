@@ -1,6 +1,6 @@
 import { DrizzleD1Database } from 'drizzle-orm/d1';
 import { eq, ne, and, lt } from 'drizzle-orm';
-import { authSessions, NewAuthSession, AuthSession } from '@/shared/db/schema/index.js';
+import { authSessions, NewAuthSession, AuthSession } from '@/shared/db/schema/index';
 
 export class SessionRepository {
     private db: DrizzleD1Database;

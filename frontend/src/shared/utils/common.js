@@ -1,5 +1,6 @@
 import { ElMessage } from 'element-plus'
 import { i18n } from '@/locales'
+import { logger } from '@/shared/utils/logger'
 
 let clipboardTimeout = null
 
@@ -26,13 +27,13 @@ export async function copyToClipboard(text, successMsg = i18n.global.t('common.c
       } catch (e) {
         // iOS/Safari 等系统出于隐私保护，会禁止非用户触发(如 setTimeout)的剪贴板写操作。
         // 这里采用“尽力而为，静默失败”原则，不弹窗打扰用户。
-        console.warn('Silent clipboard wipe failed due to system/context restrictions', e)
+        logger.warn('Silent clipboard wipe failed due to system/context restrictions', e)
       }
     }, 60000)
 
   } catch (e) {
     ElMessage.error(i18n.global.t('common.copy_fail'))
-    console.error('Clipboard error:', e)
+    logger.error('Clipboard error:', e)
   }
 }
 

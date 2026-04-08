@@ -1,5 +1,5 @@
 import { createPool, Pool } from 'mysql2/promise';
-import { DbExecutor, DbEngine } from './executor';
+import { DbExecutor, DbEngine } from '@/shared/db/executor';
 
 export class MySqlExecutor implements DbExecutor {
     readonly engine: DbEngine = 'mysql';

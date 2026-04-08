@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted } from 'vue'
 import { Check, Download, Warning, Loading, CircleCheck } from '@element-plus/icons-vue'
-import { useOfflineReadiness } from '../composables/useOfflineReadiness'
+import { useOfflineReadiness } from '@/features/settings/composables/useOfflineReadiness'
 import ResponsiveOverlay from '@/shared/components/responsiveOverlay.vue'
 import { useLayoutStore } from '@/features/home/store/layoutStore'
 

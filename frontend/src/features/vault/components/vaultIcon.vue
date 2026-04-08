@@ -17,7 +17,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
-import { useVaultIconStore } from '../store/vaultIconStore'
+import { useVaultIconStore } from '@/features/vault/store/vaultIconStore'
 
 /**
  * Logo 竞速加载机制 (Racing Mechanism) - 架构说明

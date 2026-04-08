@@ -1,5 +1,5 @@
 import { eq, desc } from 'drizzle-orm';
-import { backupProviders, type BackupProvider, type NewBackupProvider } from '@/shared/db/schema/index.js';
+import { backupProviders, type BackupProvider, type NewBackupProvider } from '@/shared/db/schema/index';
 
 export class BackupRepository {
     private db: any;

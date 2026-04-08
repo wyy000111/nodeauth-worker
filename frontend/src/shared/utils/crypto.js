@@ -1,3 +1,5 @@
+import { logger } from '@/shared/utils/logger';
+
 // frontend/src/utils/crypto-vault.js
 
 // 配置常量
@@ -28,7 +30,7 @@ export function shouldUseDevCryptoFallback(warningMsg = 'Using development fallb
     const isHttp = location.protocol === 'http:';
 
     if (isLocalHost && isHttp) {
-      console.warn(`Running locally via HTTP: ${warningMsg}`);
+      logger.warn(`Running locally via HTTP: ${warningMsg}`);
       return true;
     }
   }
@@ -132,7 +134,7 @@ export async function decryptDataWithPassword(encryptedBase64, password) {
     const dec = new TextDecoder();
     return JSON.parse(dec.decode(decrypted));
   } catch (e) {
-    console.error('Decryption failed:', e);
+    logger.error('Decryption failed:', e);
     throw new Error('密码错误或数据损坏');
   }
 }

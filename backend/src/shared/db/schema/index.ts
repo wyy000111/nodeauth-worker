@@ -1,6 +1,6 @@
-import * as sqliteSchema from './sqlite.js';
-import * as mysqlSchema from './mysql.js';
-import * as pgSchema from './pg.js';
+import * as sqliteSchema from '@/shared/db/schema/sqlite';
+import * as mysqlSchema from '@/shared/db/schema/mysql';
+import * as pgSchema from '@/shared/db/schema/pg';
 
 // Get the engine directly from global or process env
 // In Cloudflare Workers, `process.env` is not available, but that's perfectly fine

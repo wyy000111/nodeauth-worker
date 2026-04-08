@@ -1,4 +1,4 @@
-import { DbExecutor, DbEngine } from './executor';
+import { DbExecutor, DbEngine } from '@/shared/db/executor';
 
 export class D1Executor implements DbExecutor {
     readonly engine: DbEngine = 'd1';

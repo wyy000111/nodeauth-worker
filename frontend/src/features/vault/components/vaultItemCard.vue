@@ -176,7 +176,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { MoreFilled, Edit, Delete, Picture, Loading, Upload, WarningFilled, Share } from '@element-plus/icons-vue'
 import VaultIcon from '@/features/vault/components/vaultIcon.vue'
-import SwipeAction from './swipeAction.vue'
+import SwipeAction from '@/features/vault/components/swipeAction.vue'
 import { generateTOTP } from '@/shared/utils/totp'
 import { useLayoutStore } from '@/features/home/store/layoutStore'
 import { useTotpTimer } from '@/features/vault/composables/useTotpTimer'

@@ -1,9 +1,9 @@
 import { drizzle } from 'drizzle-orm/d1';
-import app from '@/app/index.js';
-import * as schema from '@/shared/db/schema/sqlite.js';
-import { handleScheduledBackup } from '@/features/backup/backupRoutes.js';
-import { migrateDatabase } from '@/shared/db/migrator.js';
-import { D1Executor } from '@/shared/db/d1Executor.js';
+import app from '@/app/index';
+import * as schema from '@/shared/db/schema/sqlite';
+import { handleScheduledBackup } from '@/features/backup/backupRoutes';
+import { migrateDatabase } from '@/shared/db/migrator';
+import { D1Executor } from '@/shared/db/d1Executor';
 
 export default {
     async fetch(request: Request, env: any, ctx: any) {

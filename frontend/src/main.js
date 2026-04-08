@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { logger } from '@/shared/utils/logger'
 import { createPinia } from 'pinia'
 import 'element-plus/dist/index.css'
 import { registerSW } from 'virtual:pwa-register'
@@ -84,7 +85,7 @@ Promise.all([
   app.use(router)
   app.mount('#app')
 }).catch(err => {
-  console.error('[Main] Initialization failed:', err)
+  logger.error('[Main] Initialization failed:', err)
   // 如果初始化彻底失败（可能是 IDB 锁死），依然尝试挂载，
   // 这样至少可以展示渲染层，或是让路由等逻辑自行处理异常，避免在 splash 页面永久卡死
   app.use(router)

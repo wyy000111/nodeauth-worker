@@ -49,7 +49,7 @@
 import { computed, useAttrs } from 'vue'
 import { useLayoutStore } from '@/features/home/store/layoutStore'
 import { ElDialog } from 'element-plus'
-import AppMobileDrawer from './appMobileDrawer.vue'
+import AppMobileDrawer from '@/shared/components/appMobileDrawer.vue'
 import { useVisualViewport } from '@/shared/composables/useVisualViewport'
 
 const props = defineProps({

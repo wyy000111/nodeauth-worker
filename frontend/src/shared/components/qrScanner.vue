@@ -48,6 +48,7 @@ import { Camera, Picture, Upload } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import jsQR from 'jsqr'
 import { i18n } from '@/locales'
+import { logger } from '@/shared/utils/logger'
 
 const props = defineProps({
   forceMode: {
@@ -118,7 +119,7 @@ const startCamera = async () => {
   } catch (err) {
     isStarting.value = false
     ElMessage.error(t('tools.camera_access_denied'))
-    console.error('Camera error:', err)
+    logger.error('Camera error:', err)
   }
 }
 
