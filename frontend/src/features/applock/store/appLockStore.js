@@ -18,6 +18,7 @@ export const useAppLockStore = defineStore('appLock', () => {
     const autoLockDelay = ref(0)
     const lastHiddenTime = ref(0)
     const isUnlocking = ref(false)
+    const ignoreAutoLockTemporarily = ref(false) // 🛡️ 解锁后缓冲期标志
 
     // 🧬 认证上下文：提前从 IDB 加载到内存
     const bioAuthContext = ref(null)
@@ -45,6 +46,8 @@ export const useAppLockStore = defineStore('appLock', () => {
      * 初始化安全状态
      */
     const init = async () => {
+        if (isInitialized.value) return
+
         isBiometricAvailable.value = appLockService.isBiometricSupported() || appLockService.isLegacyBiometricSupported()
 
         const mode = await getIdbItem('sys:sec:lock_mode') || 'none'
@@ -53,6 +56,9 @@ export const useAppLockStore = defineStore('appLock', () => {
         const hasEncSalt = !!(await getIdbItem('sys:sec:enc_device_salt'))
         if (mode !== 'none' && hasEncSalt) {
             isLocked.value = true
+            // 👮 冷启动时确认锁定，立即清理干扰时间戳，防止 visible 事件误判
+            localStorage.removeItem('app_lock_last_hidden')
+            lastHiddenTime.value = 0
             // 锁定状态下立即异步预热，不阻塞 init 完成
             preWarmBiometricContext()
         }
@@ -61,6 +67,10 @@ export const useAppLockStore = defineStore('appLock', () => {
 
         document.addEventListener('visibilitychange', () => {
             if (lockMode.value === 'none') return
+
+            // 🛡️ 架构师防御：如果正进行解锁仪式（如 FaceID 弹窗），忽略所有可见性变更
+            if (isUnlocking.value) return
+
             if (document.visibilityState === 'hidden') {
                 const now = Date.now()
                 lastHiddenTime.value = now
@@ -69,10 +79,14 @@ export const useAppLockStore = defineStore('appLock', () => {
             } else if (document.visibilityState === 'visible') {
                 const storedTime = localStorage.getItem('app_lock_last_hidden')
                 const hiddenAt = lastHiddenTime.value || Number(storedTime || 0)
-                if (Number(autoLockDelay.value) > 0 && hiddenAt > 0 && !isLocked.value) {
+
+                // 🛡️ 额外校验 ignoreAutoLockTemporarily 标志，防止解锁后的瞬间切换导致误判
+                if (!isLocked.value && Number(autoLockDelay.value) > 0 && hiddenAt > 0 && !ignoreAutoLockTemporarily.value) {
                     const elapsed = (Date.now() - hiddenAt) / 1000
                     if (elapsed > Number(autoLockDelay.value)) lock()
                 }
+
+                // 进入前台即清理标记
                 lastHiddenTime.value = 0
                 localStorage.removeItem('app_lock_last_hidden')
             }
@@ -140,6 +154,11 @@ export const useAppLockStore = defineStore('appLock', () => {
             memorySalt.value = rawSeed
             isLocked.value = false
             failedAttempts.value = 0
+
+            // 🔓 解锁成功后，设置 1 秒缓冲期
+            ignoreAutoLockTemporarily.value = true
+            setTimeout(() => { ignoreAutoLockTemporarily.value = false }, 1000)
+
             return true
         } else {
             failedAttempts.value++
@@ -216,6 +235,11 @@ export const useAppLockStore = defineStore('appLock', () => {
                     memorySalt.value = rawSeed
                     isLocked.value = false
                     failedAttempts.value = 0
+
+                    // 🔓 解锁成功后，设置 1 秒缓冲期
+                    ignoreAutoLockTemporarily.value = true
+                    setTimeout(() => { ignoreAutoLockTemporarily.value = false }, 1000)
+
                     return true
                 }
             }
@@ -282,6 +306,7 @@ export const useAppLockStore = defineStore('appLock', () => {
         failedAttempts,
         isBiometricAvailable,
         isUnlocking,
+        ignoreAutoLockTemporarily,
         init,
         setDeviceKey,
         getDeviceKey,
