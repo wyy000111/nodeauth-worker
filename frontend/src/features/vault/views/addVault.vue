@@ -10,19 +10,36 @@
         </div>
         <p class="page-desc-text">{{ $t('vault.add_account_tip') }}</p>
       </div>
-      
-      <div class="flex-center mb-20">
-        <el-radio-group v-model="activeMode" class="mode-switcher-radio">
-          <el-radio-button v-for="opt in modeOptions" :key="opt.value" :label="opt.value">
-            <div class="flex-center gap-5">
-              <el-icon><component :is="opt.icon" /></el-icon>
-              <span>{{ opt.label }}</span>
-            </div>
-          </el-radio-button>
-        </el-radio-group>
-      </div>
 
       <div class="max-w-600 m-auto">
+        <!-- 批量导入入口 (移至顶部，优先展示大宗操作) -->
+        <div class="batch-import-container-top mb-10">
+          <div class="import-card-hero" @click="layoutStore.setActiveTab('migration-import')">
+            <div class="card-left">
+              <div class="icon-ring">
+                <el-icon><Box /></el-icon>
+              </div>
+              <div class="text-meta">
+                <div class="entry-title">{{ $t('vault.batch_import_entry_title') }}</div>
+                <div class="entry-desc">{{ $t('vault.batch_import_entry_desc') }}</div>
+              </div>
+            </div>
+            <el-icon class="card-arrow"><ArrowRight /></el-icon>
+          </div>
+        </div>
+        
+        <!-- Tab 切换器 -->
+        <div class="flex-center mb-20">
+          <el-radio-group v-model="activeMode" class="mode-switcher-radio">
+            <el-radio-button v-for="opt in modeOptions" :key="opt.value" :label="opt.value">
+              <div class="flex-center gap-5">
+                <el-icon><component :is="opt.icon" /></el-icon>
+                <span>{{ opt.label }}</span>
+              </div>
+            </el-radio-button>
+          </el-radio-group>
+        </div>
+
         <!-- 摄像头 / 图片识别 -->
         <div v-if="activeMode === 'camera' || activeMode === 'image'">
           <QrScanner 
@@ -94,7 +111,7 @@
 <script setup>
 import { ref, h, defineAsyncComponent, computed, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Camera, Picture, Edit, Refresh, Plus } from '@element-plus/icons-vue'
+import { Camera, Picture, Edit, Refresh, Plus, Box, ArrowRight } from '@element-plus/icons-vue'
 import { parseOtpUri, bytesToBase32 } from '@/shared/utils/totp'
 import { useVaultStore } from '@/features/vault/store/vaultStore'
 import { vaultService } from '@/features/vault/service/vaultService'
@@ -248,16 +265,3 @@ const handleScanSuccess = async (uri) => {
 }
 </script>
 
-<style scoped>
-.mode-switcher-radio {
-  display: flex;
-  justify-content: center;
-}
-
-:deep(.el-radio-button__inner) {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-}
-</style>

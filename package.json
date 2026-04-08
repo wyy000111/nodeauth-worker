@@ -1,6 +1,6 @@
 {
     "name": "nodeauth",
-    "version": "2.1.4",
+    "version": "2.1.5",
     "description": "High-security, Lightweight 2FA/TOTP management tool supporting Cloudflare Serverless and Docker on-premise deployment.",
     "author": "nodeauth",
     "license": "AGPL-3.0",

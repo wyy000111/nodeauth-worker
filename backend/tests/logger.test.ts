@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { logger, LogLevel } from '@/shared/utils/logger';
+import { logger } from '@/shared/utils/logger';
 import process from 'node:process';
 
 describe('Architected Logger Utility', () => {

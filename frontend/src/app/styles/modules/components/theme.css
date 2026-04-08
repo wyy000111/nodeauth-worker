@@ -1,9 +1,7 @@
 .theme-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 20px;
-    max-width: 800px;
-    margin: 0 auto;
 }
 
 .theme-card {

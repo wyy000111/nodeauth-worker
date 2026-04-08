@@ -160,7 +160,9 @@
         "force_sync": "Force Sync",
         "discard_local": "Discard",
         "conflict_force_applied": "Force sync triggered",
-        "conflict_discarded": "Local changes discarded"
+        "conflict_discarded": "Local changes discarded",
+        "batch_import_entry_title": "Batch Import from other Apps",
+        "batch_import_entry_desc": "Support migrating from 20+ apps directly"
     },
     "settings": {
         "appearance_desc": "Personalize your interface style, language and layout display.",

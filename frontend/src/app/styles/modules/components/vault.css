@@ -577,3 +577,90 @@
     border-top-left-radius: var(--app-radius-card);
     border-bottom-left-radius: var(--app-radius-card);
 }
+
+/* AddVault.vue */
+.mode-switcher-radio {
+    display: flex;
+    width: 100%;
+}
+
+.mode-switcher-radio .el-radio-button {
+    flex: 1;
+    display: flex;
+}
+
+.mode-switcher-radio .el-radio-button__inner {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 10px;
+}
+
+/* 批量导入入口样式 (Architected for Premium Feeling) */
+.batch-import-container-top {
+    padding: 0 0 10px 0;
+}
+
+.import-card-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--el-bg-color);
+    border: 1px solid var(--el-border-color-lighter);
+    border-radius: var(--app-radius-aux) !important;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.import-card-hero:hover {
+    background: var(--el-fill-color-light);
+    transform: translateY(-2px);
+    border-color: var(--el-color-primary-light-5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.import-card-hero:active {
+    transform: scale(0.98);
+}
+
+.import-card-hero .card-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.import-card-hero .icon-ring {
+    width: 44px;
+    height: 44px;
+    background: var(--el-color-primary-light-9);
+    color: var(--el-color-primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.import-card-hero .text-meta {
+    text-align: left;
+}
+
+.import-card-hero .entry-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--el-text-color-primary);
+    margin-bottom: 2px;
+}
+
+.import-card-hero .entry-desc {
+    font-size: 11px;
+    color: var(--el-text-color-secondary);
+}
+
+.import-card-hero .card-arrow {
+    color: var(--el-text-color-placeholder);
+    font-size: 16px;
+}

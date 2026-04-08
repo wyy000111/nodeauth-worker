@@ -160,7 +160,9 @@
         "force_sync": "强制覆盖",
         "discard_local": "放弃修改",
         "conflict_force_applied": "已触发强制同步",
-        "conflict_discarded": "本地更改已放弃"
+        "conflict_discarded": "本地更改已放弃",
+        "batch_import_entry_title": "从其他应用批量导入数据",
+        "batch_import_entry_desc": "支持从 20+ 应用直接迁移"
     },
     "settings": {
         "appearance_desc": "个性化您的界面风格、语言以及布局显示。",

@@ -1,9 +1,7 @@
 .language-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 16px;
-    max-width: 600px;
-    margin: 0 auto;
+    gap: 20px;
+    flex-direction: column;
 }
 
 .language-card {
